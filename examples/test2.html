@@ -34,16 +34,14 @@
     <button id="disable">Disable</button>
     <p id="modified">Editables have not been modified</p>
 
-    <h1 class="editable">Hello World</h1>
-    <h2 class="editable"></h2>
-    <div class="editable">
-      <p>
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
-      </p>
-      <p>
-        Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.
-      </p>
+    <div class="editable" style="width: 600px; height: 120px; background-color: lightyellow; font-size: 100px; margin: 20px;">
+        A big title
     </div>
+
+    <div class="editable" style="width: 600px; height: 100px; background-color: lightyellow; margin: 20px;">
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+    </div>
+
 
     <script>
       function px2num(val) {
@@ -57,13 +55,10 @@
           toolbar: 'halloToolbarFixed',
           plugins: {
             'halloformat': {},
-            'halloblock': {},
             'hallojustify': {},
             'hallolists': {},
-            'hallolink': {},
-            'halloreundo': {},
             'classpalette': {colorClasses: {'main': 'main-color', 'secondary': 'secondary-color'}},
-            'textsizer': {},
+            'textsizer': {bounded: true},
             //'hallotoolbarlinebreak': { breakAfter: ['hallojustify'] }
           },
           editable: true,
@@ -71,6 +66,7 @@
         });
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
+            // console.log(event, data)
         });
         jQuery('.editable').bind('halloselected', function(event, data) {
             jQuery('#modified').html("Selection made");
