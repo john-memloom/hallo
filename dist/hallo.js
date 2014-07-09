@@ -886,6 +886,224 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget('IKS.fontcolor', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        colors: ['ffffff', 'ffccc9', 'ffce93', 'fffc9e', 'ffffc7', '9aff99', '96fffb', 'cdffff', 'cbcefb', 'cfcfcf', 'fd6864', 'fe996b', 'fffe65', 'fcff2f', '67fd9a', '38fff8', '68fdff', '9698ed', 'c0c0c0', 'fe0000', 'f8a102', 'ffcc67', 'f8ff00', '34ff34', '68cbd0', '34cdf9', '6665cd', '9b9b9b', 'cb0000', 'f56b00', 'ffcb2f', 'ffc702', '32cb00', '00d2cb', '3166ff', '6434fc', '656565', '9a0000', 'ce6301', 'cd9934', '999903', '009901', '329a9d', '3531ff', '6200c9', '343434', '680100', '963400', '986536', '646809', '036400', '34696d', '00009b', '303498', '000000', '330001', '643403', '663234', '343300', '013300', '003532', '010066', '340096'],
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonset, contentId, target;
+        this.widget = this;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(target);
+        return buttonset.append(this._prepareButton(target));
+      },
+      _prepareDropdown: function(contentId) {
+        var addColor, color, contentArea, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id='" + contentId + "' class='font-color-picker'></div>");
+        addColor = function(color) {
+          var colorBlock;
+          colorBlock = jQuery("<div class='font-color-block' style='background-color: \#" + color + ";'></div>");
+          return colorBlock.on("click", function() {
+            var allOrNothing, el, r;
+            color = colorBlock.css('background-color');
+            el = _this.widget.options.editable.element;
+            r = _this.widget.options.editable.getSelection();
+            allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+            if (allOrNothing) {
+              el.children().css('color', '');
+              return el.css('color', color);
+            } else {
+              return rangy.createStyleApplier("color: " + color + ";", {
+                normalize: true
+              }).applyToRange(r);
+            }
+          });
+        };
+        _ref = this.options.colors;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          color = _ref[_i];
+          contentArea.append(addColor(color));
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdownbutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'fonts',
+          img: 'colors.gif',
+          target: target,
+          targetOffset: {
+            x: 0,
+            y: 0
+          },
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.fontlist', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        fonts: ['Arial', 'Times New Roman'],
+        buttonCssClass: null,
+        widget: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonset, contentId, target;
+        this.widget = this;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(target);
+        return buttonset.append(this._prepareButton(target));
+      },
+      _prepareDropdown: function(contentId) {
+        var addFont, contentArea, font, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id='" + contentId + "' class='font-list'></div>");
+        addFont = function(font) {
+          var fntBtn;
+          fntBtn = jQuery("<div class='font-item'>" + font + "</div>");
+          fntBtn.on('click', function() {
+            var allOrNothing, el, r;
+            font = fntBtn.text();
+            el = _this.widget.options.editable.element;
+            r = _this.widget.options.editable.getSelection();
+            allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+            if (allOrNothing) {
+              el.children().css('font-family', '');
+              el.css('font-family', font);
+            } else {
+              rangy.createStyleApplier("font-family: " + font + ";", {
+                normalize: true
+              }).applyToRange(r);
+            }
+            return $('#' + _this.widget.options.uuid + '-fonts span').text(font);
+          });
+          return fntBtn;
+        };
+        _ref = this.options.fonts;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          font = _ref[_i];
+          if (font === '-') {
+            contentArea.append('<hr />');
+          } else {
+            contentArea.append(addFont(font));
+          }
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdowntext({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'fonts',
+          "default": 'Times',
+          target: target,
+          targetOffset: {
+            x: 0,
+            y: 0
+          },
+          width: 100,
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.fontsize', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        sizes: [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96],
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonset, contentId, target;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(target);
+        return buttonset.append(this._prepareButton(target));
+      },
+      _prepareDropdown: function(contentId) {
+        var addSize, contentArea, currentFont, size, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id='" + contentId + "' class='font-size-list'></div>");
+        currentFont = this.options.editable.element.get(0).tagName.toLowerCase();
+        addSize = function(size) {
+          var el;
+          el = jQuery("<div class='font-size-item'>" + size + "</div>");
+          el.on('click', function() {
+            var font;
+            return font = el.text();
+          });
+          return el;
+        };
+        _ref = this.options.sizes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          size = _ref[_i];
+          contentArea.append(addSize(size));
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdownedit({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'font size',
+          "default": 12,
+          size: 2,
+          target: target,
+          targetOffset: {
+            x: 0,
+            y: 0
+          },
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget("IKS.halloformat", {
       options: {
         editable: null,
@@ -2902,6 +3120,42 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget("IKS.verticalalign", {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonize, buttonset,
+          _this = this;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        buttonize = function(alignment) {
+          var buttonElement;
+          buttonElement = jQuery('<span></span>');
+          buttonElement.hallobutton({
+            uuid: _this.options.uuid,
+            editable: _this.options.editable,
+            label: alignment,
+            icon: "icon-glass",
+            cssClass: _this.options.buttonCssClass
+          });
+          return buttonset.append(buttonElement);
+        };
+        buttonize("Top");
+        buttonize("Middle");
+        buttonize("Bottom");
+        buttonset.hallobuttonset();
+        return toolbar.append(buttonset);
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget('IKS.halloToolbarContextual', {
       toolbar: null,
       options: {
@@ -3418,8 +3672,13 @@
         uuid: '',
         label: null,
         icon: null,
+        img: null,
         editable: null,
         target: '',
+        targetOffset: {
+          x: -20,
+          y: 0
+        },
         cssClass: null
       },
       _create: function() {
@@ -3469,14 +3728,176 @@
         target = jQuery(this.options.target);
         _ref = this.button.position(), top = _ref.top, left = _ref.left;
         top += this.button.outerHeight();
-        target.css('top', top);
-        return target.css('left', left - 20);
+        target.css('top', top + this.options.targetOffset.y);
+        return target.css('left', left + this.options.targetOffset.x);
+      },
+      _prepareButton: function() {
+        var buttonEl, classes, glyph, id;
+        id = "" + this.options.uuid + "-" + this.options.label;
+        classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
+        if (this.options.icon) {
+          glyph = "<i class=\"" + this.options.icon + "\"></i>";
+        }
+        if (this.options.img) {
+          glyph = "<img src='" + this.options.img + "'></img>";
+        }
+        buttonEl = jQuery(("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\">") + glyph + "</i></span>       </button>");
+        if (this.options.cssClass) {
+          buttonEl.addClass(this.options.cssClass);
+        }
+        return buttonEl;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.hallodropdownedit', {
+      button: null,
+      options: {
+        uuid: '',
+        label: null,
+        editable: null,
+        target: '',
+        targetOffset: {
+          x: -20,
+          y: 0
+        },
+        cssClass: null,
+        "default": null,
+        size: 10
+      },
+      _init: function() {
+        var target,
+          _this = this;
+        target = jQuery(this.options.target);
+        target.css('position', 'absolute');
+        target.addClass('dropdown-menu');
+        target.hide();
+        if (!this.button) {
+          this.button = this._prepareButton();
+        }
+        this.button.on('click', function() {
+          if (target.hasClass('open')) {
+            _this._hideTarget();
+            return;
+          }
+          return _this._showTarget();
+        });
+        target.on('click', function() {
+          return _this._hideTarget();
+        });
+        this.options.editable.element.on('hallodeactivated', function() {
+          return _this._hideTarget();
+        });
+        return this.element.append(this.button);
+      },
+      _showTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        this._updateTargetPosition();
+        target.addClass('open');
+        return target.show();
+      },
+      _hideTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        target.removeClass('open');
+        return target.hide();
+      },
+      _updateTargetPosition: function() {
+        var left, target, top, _ref;
+        target = jQuery(this.options.target);
+        _ref = this.button.position(), top = _ref.top, left = _ref.left;
+        top += this.button.outerHeight();
+        target.css('top', top + this.options.targetOffset.y);
+        return target.css('left', left + this.options.targetOffset.x);
       },
       _prepareButton: function() {
         var buttonEl, classes, id;
         id = "" + this.options.uuid + "-" + this.options.label;
         classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
-        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\"><i class=\"" + this.options.icon + "\"></i></span>       </button>");
+        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\"><input type='text' size='" + this.options.size + "' value='" + this.options["default"] + "'></input>&nbsp;<i class=\"icon-caret-down\"></i></span>       </button>");
+        if (this.options.cssClass) {
+          buttonEl.addClass(this.options.cssClass);
+        }
+        return buttonEl;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.hallodropdowntext', {
+      button: null,
+      options: {
+        uuid: '',
+        label: null,
+        editable: null,
+        target: '',
+        targetOffset: {
+          x: -20,
+          y: 0
+        },
+        cssClass: null,
+        "default": null,
+        width: null
+      },
+      _init: function() {
+        var target,
+          _this = this;
+        target = jQuery(this.options.target);
+        target.css('position', 'absolute');
+        target.addClass('dropdown-menu');
+        target.hide();
+        if (!this.button) {
+          this.button = this._prepareButton();
+        }
+        this.button.on('click', function() {
+          if (target.hasClass('open')) {
+            _this._hideTarget();
+            return;
+          }
+          return _this._showTarget();
+        });
+        target.on('click', function() {
+          return _this._hideTarget();
+        });
+        this.options.editable.element.on('hallodeactivated', function() {
+          return _this._hideTarget();
+        });
+        return this.element.append(this.button);
+      },
+      _showTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        this._updateTargetPosition();
+        target.addClass('open');
+        return target.show();
+      },
+      _hideTarget: function() {
+        var target;
+        target = jQuery(this.options.target);
+        target.removeClass('open');
+        return target.hide();
+      },
+      _updateTargetPosition: function() {
+        var left, target, top, _ref;
+        target = jQuery(this.options.target);
+        _ref = this.button.position(), top = _ref.top, left = _ref.left;
+        top += this.button.outerHeight();
+        target.css('top', top + this.options.targetOffset.y);
+        return target.css('left', left + this.options.targetOffset.x);
+      },
+      _prepareButton: function() {
+        var buttonEl, classes, id;
+        id = "" + this.options.uuid + "-" + this.options.label;
+        classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
+        buttonEl = jQuery("<button id='" + id + "'       class='" + (classes.join(' ')) + "' title='" + this.options.label + "'>       <div style='width: " + this.options.width + "px;'>       <span>" + this.options["default"] + "&nbsp;</span><i class='icon-caret-down' style='float: right;'></i></div>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }

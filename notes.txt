@@ -1,0 +1,27 @@
+
+vertical align
+- must apply to whole block
+- apply style to outermost container
+
+columns & no line-cutoff
+- integrate FTColumnFlow
+- mark text areas as "body text" and have it flow to next available body text area
+
+copy/paste
+- http://stackoverflow.com/questions/6035071/intercept-paste-event-in-javascript
+
+font colors
+- color picker
+- top row of theme colors
+- bottom grid of color choices
+- reset defaults button
+
+font size
+- number drop list
+- up/down arrows
+
+font choices
+- drop list
+- theme fonts
+- divider
+- standard fonts

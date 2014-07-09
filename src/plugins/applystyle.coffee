@@ -1,6 +1,11 @@
 #     Hallo - a rich text editing jQuery UI widget
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
+#
+#     applystyle - a plugin for Hallo to allow user defined style to be applied to a selection
+#     (c) 2014 John Harding, Memloom, inc.
+#     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
+
 ((jQuery) ->
   jQuery.widget 'IKS.applystyle',
     options:

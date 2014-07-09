@@ -125,5 +125,6 @@ module.exports = ->
 
   # Local tasks
   @registerTask 'build', ['coffee', 'concat', 'clean', 'uglify']
+  @registerTask 'quick', ['coffee', 'concat', 'clean']
   @registerTask 'test', ['coffeelint', 'build', 'qunit']
   @registerTask 'crossbrowser', ['test', 'connect', 'saucelabs-qunit']

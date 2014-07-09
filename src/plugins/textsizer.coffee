@@ -1,3 +1,8 @@
+#
+#     textsizer - a plugin for Hallo to allow user to increase, decrease or autosize text
+#     (c) 2014 John Harding, Memloom, inc.
+#     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
+
 ((jQuery) ->
   jQuery.widget "IKS.textsizer",
 

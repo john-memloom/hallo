@@ -13,25 +13,11 @@
     <script src="../lib/rangy/rangy-core.js"></script>
     <script src="../lib/rangy/rangy-cssclassapplier.js"></script>
     <script src="../lib/rangy/rangy-styleapplier.js"></script>
-
     <script src="../dist/hallo.js"></script>
     <title>Hallo example</title>
-    <style>
-      .inPlaceholderMode{
-        color: #ccc;
-      }
-     .main-color{
-       color: red;
-     }
-     .secondary-color{
-       color: blue;
-       }
-    </style>
   </head>
   <body>
 
-    <button id="enable">Enable</button>
-    <button id="disable">Disable</button>
     <p id="modified">Editables have not been modified</p>
 
     <div class="editable" style="width: 600px; height: 120px; background-color: lightyellow; font-size: 100px; margin: 20px;">
@@ -50,20 +36,30 @@
       }
 
 
-      jQuery('#enable').button().click(function() {
+      jQuery(document).ready(function() {
         jQuery('.editable').hallo({
           toolbar: 'halloToolbarFixed',
           plugins: {
-            'halloformat': {},
-            'hallojustify': {},
-            'hallolists': {},
-            'classpalette': {colorClasses: {'main': 'main-color', 'secondary': 'secondary-color'}},
-            'textsizer': {bounded: true},
-            //'hallotoolbarlinebreak': { breakAfter: ['hallojustify'] }
+            halloformat: {'formattings': {bold: true, italic: true, strikethrough: true, underline: true}},
+            hallolists: {},
+            hallojustify: {},
+            
+            verticalalign: {},
+
+            fontlist: { fonts: ['Arial', 'Times', 'Verdana', '-', 'Museo Sans', 'Museo Slab', 'Bree', 'Grafolita Script', 'Droid Serif', 'Kepler', 'Grandma']},
+            fontcolor: {},
+            fontsize: {},
+
+            halloblacklist: { 'tags': ['a', 'input', 'script'] },
+            // pasteText: {},
+            // flowText: {}
+            'hallotoolbarlinebreak': { breakAfter: ['verticalalign'] }
           },
-          editable: true,
-          placeholder: 'Hello World placeholder'
+          editable: true
         });
+
+
+
         jQuery('.editable').bind('hallomodified', function(event, data) {
             jQuery('#modified').html("Editables modified");
             // console.log(event, data)
@@ -78,11 +74,8 @@
             jQuery('#modified').html("restored");
         });
       });
-      jQuery('#disable').button().click(function() {
-        jQuery('.editable').hallo({editable: false});
-      });
+
       jQuery('.editable').bind('hellodeactivated', function() {
-          alert("foobar");
         $(this).hallo({editable:false});
       });
     </script>

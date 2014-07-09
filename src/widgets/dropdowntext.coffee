@@ -2,26 +2,23 @@
 #     (c) 2011 Henri Bergius, IKS Consortium
 #     Hallo may be freely distributed under the MIT license
 #
-# updated by John Harding, 2014
-# - made offset of target area configurable
-# - made it accept either an icon or an image
+#     hallodropdowntext - a widget for Hallo to allow a drop down label in the toolbar
+#     (c) 2014 John Harding, Memloom, inc.
+#     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
 
 ((jQuery) ->
-  jQuery.widget 'IKS.hallodropdownbutton',
+  jQuery.widget 'IKS.hallodropdowntext',
     button: null
 
     options:
       uuid: ''
       label: null
-      icon: null
-      img: null
       editable: null
       target: ''
       targetOffset: { x: -20, y: 0}
       cssClass: null
-
-    _create: ->
-      @options.icon ?= "icon-#{@options.label.toLowerCase()}"
+      default: null
+      width: null
 
     _init: ->
       target = jQuery @options.target
@@ -72,12 +69,10 @@
         'ui-corner-all'
         'ui-button-text-only'
       ]
-      glyph = "<i class=\"#{@options.icon}\"></i>" if @options.icon
-      glyph = "<img src='#{@options.img}'></img>" if @options.img
-
-      buttonEl = jQuery "<button id=\"#{id}\"
-       class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
-       <span class=\"ui-button-text\">"+glyph+"</i></span>
+      buttonEl = jQuery "<button id='#{id}'
+       class='#{classes.join(' ')}' title='#{@options.label}'>
+       <div style='width: #{@options.width}px;'>
+       <span>#{@options.default}&nbsp;</span><i class='icon-caret-down' style='float: right;'></i></div>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl

@@ -109,3 +109,32 @@ button.blockselector, button.blockselector:focus{
     border-radius: 10px;
     cursor: none;
 }
+
+.font-list{
+    background-color: white;
+    width: 100px;
+    padding: 10px;
+}
+
+.font-item{
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.font-color-picker{
+    width: 150px;
+    margin: 10px 10px 10px 10px;
+}
+
+.font-color-block{
+    width: 10px;
+    height: 10px;
+    margin: 3px 3px 3px 3px;
+    float: left;
+    cursor: pointer;
+    border: solid 2px; 
+}
+
+.font-color-block:hover{
+    border: solid red 2px;
+}
