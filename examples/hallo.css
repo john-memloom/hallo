@@ -112,6 +112,7 @@ button.blockselector, button.blockselector:focus{
 
 .font-list{
     background-color: white;
+    border: solid;
     width: 100px;
     padding: 10px;
 }
@@ -122,8 +123,10 @@ button.blockselector, button.blockselector:focus{
 }
 
 .font-color-picker{
-    width: 150px;
-    margin: 10px 10px 10px 10px;
+    background-color: white;
+    border: solid;
+    width: 200px;
+    padding: 10px 10px 10px 10px;
 }
 
 .font-color-block{
@@ -135,6 +138,10 @@ button.blockselector, button.blockselector:focus{
     border: solid 2px; 
 }
 
+.font-color-selection{
+    margin: 10px 0 10px 0;
+}
+
 .font-color-block:hover{
-    border: solid red 2px;
+    border: solid red 2px !important;
 }

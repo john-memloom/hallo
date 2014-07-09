@@ -32,7 +32,7 @@
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-list'></div>"
       addFont = (font) =>
-        fntBtn = jQuery "<div class='font-item'>#{font}</div>"
+        fntBtn = jQuery "<div class='font-item' style='font-family: #{font};'>#{font}</div>"
         fntBtn.on 'click', => 
           font = fntBtn.text()
           el = @widget.options.editable.element

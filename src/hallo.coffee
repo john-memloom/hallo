@@ -307,7 +307,6 @@ http://hallojs.org
       else
         target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0]
         evt.stopPropagation()
-      console.log('hide stuff!')
       $('.hallotoolbar .dropdown-menu').each (idx,el) =>
         $(el).hide() unless el == target
       

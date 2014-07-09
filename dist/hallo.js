@@ -260,7 +260,6 @@
           target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0];
           evt.stopPropagation();
         }
-        console.log('hide stuff!');
         return $('.hallotoolbar .dropdown-menu').each(function(idx, el) {
           if (el !== target) {
             return $(el).hide();
@@ -925,7 +924,9 @@
         editable: null,
         toolbar: null,
         uuid: '',
-        colors: ['ffffff', 'ffccc9', 'ffce93', 'fffc9e', 'ffffc7', '9aff99', '96fffb', 'cdffff', 'cbcefb', 'cfcfcf', 'fd6864', 'fe996b', 'fffe65', 'fcff2f', '67fd9a', '38fff8', '68fdff', '9698ed', 'c0c0c0', 'fe0000', 'f8a102', 'ffcc67', 'f8ff00', '34ff34', '68cbd0', '34cdf9', '6665cd', '9b9b9b', 'cb0000', 'f56b00', 'ffcb2f', 'ffc702', '32cb00', '00d2cb', '3166ff', '6434fc', '656565', '9a0000', 'ce6301', 'cd9934', '999903', '009901', '329a9d', '3531ff', '6200c9', '343434', '680100', '963400', '986536', '646809', '036400', '34696d', '00009b', '303498', '000000', '330001', '643403', '663234', '343300', '013300', '003532', '010066', '340096'],
+        grays: ['040404', '333333', '535353', '878787', 'A8A8A8', 'C1C1C1', 'D0D0D0', 'EBEBEB', 'F0F0F0', 'FFFFFF'],
+        brights: ['761616', 'e12828', 'ec8a28', 'fffa29', '72f507', '69fafa', '4177de', '0029fa', '6f30fb', 'dc3bff'],
+        shades: ['d6aba2', 'e8c3c2', 'f6dfc4', 'fdeec3', 'd5e3c9', 'c9d8d8', 'c0d2f4', 'c8d8ee', 'cec9e3', 'dfc8d4', 'c46f5e', 'd58b8b', 'eec08f', 'fbdd8d', 'b1cb98', '99b6bc', '98b6ee', '95b9e0', 'a099cb', 'c198b0', 'ac3b2a', 'c45a5a', 'e7a461', 'f9ce5d', '8fb36b', '6e939d', '618fe2', '6789d0', '756db4', 'a76d90', '842018', 'aa1e1f', 'd18138', 'e5b436', '69933f', '436d79', '3469cb', '3c73b6', '4c4394', '864368', '661e16', '771616', '974f1b', 'aa7d1c', '3c5f17', '1d3d48', '104abd', '17437f', '211c60', '561c39', '41120d', '490e0e', '5d3211', '674d12', '273b10', '13272e', '193872', '102b4f', '14123b', '341225'],
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
@@ -940,12 +941,12 @@
         return buttonset.append(this._prepareButton(target));
       },
       _prepareDropdown: function(contentId) {
-        var addColor, color, contentArea, _i, _len, _ref,
+        var addColor, color, contentArea, section, sectionName, _i, _j, _len, _len1, _ref, _ref1,
           _this = this;
         contentArea = jQuery("<div id='" + contentId + "' class='font-color-picker'></div>");
         addColor = function(color) {
           var colorBlock;
-          colorBlock = jQuery("<div class='font-color-block' style='background-color: \#" + color + ";'></div>");
+          colorBlock = jQuery("<div class='font-color-block' style='background-color: \#" + color + "; border-color: \#" + color + "'></div>");
           return colorBlock.on("click", function() {
             var allOrNothing, el, r;
             color = colorBlock.css('background-color');
@@ -962,10 +963,16 @@
             }
           });
         };
-        _ref = this.options.colors;
+        _ref = ['grays', 'brights', 'shades'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          color = _ref[_i];
-          contentArea.append(addColor(color));
+          sectionName = _ref[_i];
+          section = jQuery("<div class='font-color-selection' style='height: " + ((this.options[sectionName].length / 10) * 17) + "px;'></div>");
+          _ref1 = this.options[sectionName];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            color = _ref1[_j];
+            section.append(addColor(color));
+          }
+          contentArea.append(section);
         }
         return contentArea;
       },
@@ -1019,7 +1026,7 @@
         contentArea = jQuery("<div id='" + contentId + "' class='font-list'></div>");
         addFont = function(font) {
           var fntBtn;
-          fntBtn = jQuery("<div class='font-item'>" + font + "</div>");
+          fntBtn = jQuery("<div class='font-item' style='font-family: " + font + ";'>" + font + "</div>");
           fntBtn.on('click', function() {
             var allOrNothing, el, r;
             font = fntBtn.text();
