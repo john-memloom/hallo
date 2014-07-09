@@ -301,6 +301,21 @@ http://hallojs.org
         ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
       "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
+    hidemenus: (evt) ->
+      unless evt
+        target = null 
+      else
+        target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0]
+      console.log('hide stuff!')
+      $('.hallotoolbar .dropdown-menu').each (idx,el) =>
+        $(el).hide() unless el == target
+      
+
+    _addDropdownMenuHandlers: ->
+      return unless @toolbar
+      @toolbar.find('button').each (idx,el) =>
+        $(el.parentElement).on "click", (evt) => @hidemenus(evt)
+
     _prepareToolbar: ->
       @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
       @toolbar.addClass @options.toolbarCssClass if @options.toolbarCssClass
@@ -320,6 +335,8 @@ http://hallojs.org
         populate = instance.populateToolbar
         continue unless jQuery.isFunction populate
         @element[plugin] 'populateToolbar', @toolbar
+
+      @_addDropdownMenuHandlers()
 
       @element[@options.toolbar] 'setPosition'
       @protectFocusFrom @toolbar

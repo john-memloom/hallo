@@ -251,6 +251,35 @@
         };
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
+      hidemenus: function(evt) {
+        var target,
+          _this = this;
+        if (!evt) {
+          target = null;
+        } else {
+          target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0];
+        }
+        console.log('hide stuff!');
+        $('.hallotoolbar .dropdown-menu').each(function(idx, el) {
+          if (el !== target) {
+            return $(el).hide();
+          }
+        });
+        if (target) {
+          return $(target).show();
+        }
+      },
+      _addDropdownMenuHandlers: function() {
+        var _this = this;
+        if (!this.toolbar) {
+          return;
+        }
+        return this.toolbar.find('button').each(function(idx, el) {
+          return $(el.parentElement).on("click", function(evt) {
+            return _this.hidemenus(evt);
+          });
+        });
+      },
       _prepareToolbar: function() {
         var defaults, instance, plugin, populate, toolbarOptions;
         this.toolbar = jQuery('<div class="hallotoolbar"></div>').hide();
@@ -276,6 +305,7 @@
           }
           this.element[plugin]('populateToolbar', this.toolbar);
         }
+        this._addDropdownMenuHandlers();
         this.element[this.options.toolbar]('setPosition');
         return this.protectFocusFrom(this.toolbar);
       },
@@ -1056,7 +1086,20 @@
         toolbar.append(buttonset);
         buttonset.hallobuttonset();
         buttonset.append(target);
-        return buttonset.append(this._prepareButton(target));
+        buttonset.append(this._prepareButton(target));
+        buttonset.append(this._makeSizerButton("up"));
+        return buttonset.append(this._makeSizerButton("down"));
+      },
+      _makeSizerButton: function(direction) {
+        var buttonHolder;
+        buttonHolder = jQuery('<span></span>');
+        buttonHolder.hallobutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          icon: direction === "up" ? 'icon-caret-up' : 'icon-caret-down',
+          label: direction === "up" ? 'increase font size' : 'decrease font size'
+        });
+        return buttonHolder;
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, currentFont, size, _i, _len, _ref,
@@ -1207,6 +1250,41 @@
           format = _ref[_i];
           buttonize(format);
         }
+        buttonset.hallobuttonset();
+        return toolbar.append(buttonset);
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget("IKS.horizontalrule", {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonize, buttonset,
+          _this = this;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        buttonize = function(label, icon) {
+          var buttonElement;
+          buttonElement = jQuery('<span></span>');
+          buttonElement.hallobutton({
+            uuid: _this.options.uuid,
+            editable: _this.options.editable,
+            label: label,
+            icon: icon,
+            cssClass: _this.options.buttonCssClass
+          });
+          return buttonset.append(buttonElement);
+        };
+        buttonize("Insert one horizontal line", "icon-minus");
+        buttonize("Turn on horizontal ruled lines for page", "icon-align-justify");
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
       }
@@ -2630,6 +2708,86 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget('IKS.linespace', {
+      options: {
+        editable: null,
+        toolbar: null,
+        uuid: '',
+        sizes: [1, 1.5, 2],
+        buttonCssClass: null
+      },
+      populateToolbar: function(toolbar) {
+        var buttonset, contentId, target;
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
+        target = this._prepareDropdown(contentId);
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(target);
+        buttonset.append(this._prepareButton(target));
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
+        buttonset.append(this._makeSizerButton("up"));
+        return buttonset.append(this._makeSizerButton("down"));
+      },
+      _makeSizerButton: function(direction) {
+        var buttonHolder;
+        buttonHolder = jQuery('<span></span>');
+        buttonHolder.hallobutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          icon: direction === "up" ? 'icon-caret-up' : 'icon-caret-down',
+          label: direction === "up" ? 'increase font size' : 'decrease font size'
+        });
+        return buttonHolder;
+      },
+      _prepareDropdown: function(contentId) {
+        var addSize, contentArea, currentFont, size, _i, _len, _ref,
+          _this = this;
+        contentArea = jQuery("<div id='" + contentId + "' class='font-size-list'></div>");
+        currentFont = this.options.editable.element.get(0).tagName.toLowerCase();
+        addSize = function(size) {
+          var el;
+          el = jQuery("<div class='font-size-item'>" + size + "x</div>");
+          el.on('click', function() {
+            var font;
+            return font = el.text();
+          });
+          return el;
+        };
+        _ref = this.options.sizes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          size = _ref[_i];
+          contentArea.append(addSize(size));
+        }
+        return contentArea;
+      },
+      _prepareButton: function(target) {
+        var buttonElement;
+        buttonElement = jQuery('<span></span>');
+        buttonElement.hallodropdownedit({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'font size',
+          "default": '1x',
+          size: 2,
+          target: target,
+          targetOffset: {
+            x: 0,
+            y: 0
+          },
+          cssClass: this.options.buttonCssClass
+        });
+        return buttonElement;
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget("IKS.hallolink", {
       options: {
         editable: null,
@@ -3138,7 +3296,7 @@
             uuid: _this.options.uuid,
             editable: _this.options.editable,
             label: alignment,
-            icon: "icon-glass",
+            icon: "icon-question-sign",
             cssClass: _this.options.buttonCssClass
           });
           return buttonset.append(buttonElement);

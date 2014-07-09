@@ -7,12 +7,12 @@
 #     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
 #
 ((jQuery) ->
-  jQuery.widget 'IKS.fontsize',
+  jQuery.widget 'IKS.linespace',
     options:
       editable: null
       toolbar: null
       uuid: ''
-      sizes: [8,9,10,11,12,14,18,24,30,36,48,60,72,96]
+      sizes: [1, 1.5, 2]
       buttonCssClass: null
 
     populateToolbar: (toolbar) ->
@@ -43,7 +43,7 @@
       contentArea = jQuery "<div id='#{contentId}' class='font-size-list'></div>"
       currentFont = @options.editable.element.get(0).tagName.toLowerCase()
       addSize = (size) =>
-        el = jQuery "<div class='font-size-item'>#{size}</div>"
+        el = jQuery "<div class='font-size-item'>#{size}x</div>"
         el.on 'click', =>
           font = el.text()
         el
@@ -57,7 +57,7 @@
         uuid: @options.uuid
         editable: @options.editable
         label: 'font size'
-        default: 12
+        default: '1x'
         size: 2
         target: target
         targetOffset: {x:0, y:0}
