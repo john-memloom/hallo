@@ -258,26 +258,30 @@
           target = null;
         } else {
           target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0];
+          evt.stopPropagation();
         }
         console.log('hide stuff!');
-        $('.hallotoolbar .dropdown-menu').each(function(idx, el) {
+        return $('.hallotoolbar .dropdown-menu').each(function(idx, el) {
           if (el !== target) {
             return $(el).hide();
           }
         });
-        if (target) {
-          return $(target).show();
-        }
       },
       _addDropdownMenuHandlers: function() {
         var _this = this;
         if (!this.toolbar) {
           return;
         }
-        return this.toolbar.find('button').each(function(idx, el) {
+        this.toolbar.find('button').each(function(idx, el) {
           return $(el.parentElement).on("click", function(evt) {
             return _this.hidemenus(evt);
           });
+        });
+        $(this.element).on("click", function() {
+          return _this.hidemenus(null);
+        });
+        return $('.hallotoolbar').on("click", function() {
+          return _this.hidemenus(null);
         });
       },
       _prepareToolbar: function() {
@@ -1087,6 +1091,9 @@
         buttonset.hallobuttonset();
         buttonset.append(target);
         buttonset.append(this._prepareButton(target));
+        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
+        toolbar.append(buttonset);
+        buttonset.hallobuttonset();
         buttonset.append(this._makeSizerButton("up"));
         return buttonset.append(this._makeSizerButton("down"));
       },
