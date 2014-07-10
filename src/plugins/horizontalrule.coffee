@@ -15,18 +15,19 @@
 
     populateToolbar: (toolbar) ->
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      buttonize = (label, icon) =>
-        buttonElement = jQuery '<span></span>'
-        buttonElement.hallobutton
+      makeButton = (label, icon, cmd) =>
+        btn = jQuery '<span></span>'
+        btn.hallobutton
           uuid: @options.uuid
           editable: @options.editable
           label: label
           icon: icon
           cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
+          command: cmd
+        buttonset.append btn
 
-      buttonize "Insert one horizontal line", "icon-minus"
-      buttonize "Turn on horizontal ruled lines for page", "icon-align-justify"
+      insertHR = makeButton "Insert one horizontal line", "icon-minus", 'insertHorizontalRule'
+      addLines = makeButton "Turn on horizontal ruled lines for page", "icon-align-justify", null
 
       buttonset.hallobuttonset()
       toolbar.append buttonset

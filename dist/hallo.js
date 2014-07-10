@@ -1258,23 +1258,24 @@
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset,
+        var addLines, buttonset, insertHR, makeButton,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(label, icon) {
-          var buttonElement;
-          buttonElement = jQuery('<span></span>');
-          buttonElement.hallobutton({
+        makeButton = function(label, icon, cmd) {
+          var btn;
+          btn = jQuery('<span></span>');
+          btn.hallobutton({
             uuid: _this.options.uuid,
             editable: _this.options.editable,
             label: label,
             icon: icon,
-            cssClass: _this.options.buttonCssClass
+            cssClass: _this.options.buttonCssClass,
+            command: cmd
           });
-          return buttonset.append(buttonElement);
+          return buttonset.append(btn);
         };
-        buttonize("Insert one horizontal line", "icon-minus");
-        buttonize("Turn on horizontal ruled lines for page", "icon-align-justify");
+        insertHR = makeButton("Insert one horizontal line", "icon-minus", 'insertHorizontalRule');
+        addLines = makeButton("Turn on horizontal ruled lines for page", "icon-align-justify", null);
         buttonset.hallobuttonset();
         return toolbar.append(buttonset);
       }
@@ -2820,7 +2821,6 @@
           } else {
             size = parseFloat(size.slice(0, -2));
             fsize = parseFloat(getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2));
-            console.log(size, fsize, size / fsize);
             size = (size / fsize) / 1.2;
             size = Math.round(size * 10) / 10;
           }
