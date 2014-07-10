@@ -1296,9 +1296,18 @@
           icon: 'icon-align-justify',
           cssClass: this.options.buttonCssClass
         });
+        if (this.options.editable.element.css("background-image") === "linear-gradient(#eee 2px, transparent 2px)") {
+          toggleLines.children()[0].addClass('ui-state-active');
+        }
         buttonset.append(toggleLines);
-        toggleLines.on("click", function() {
-          return _this.addLines(_this.widget.options.editable);
+        toggleLines.on("click", function(evt) {
+          if ($(evt.currentTarget.children[0]).hasClass('ui-state-active')) {
+            _this.removeLines(_this.widget.options.editable);
+            return $(evt.currentTarget.children[0]).removeClass('ui-state-active');
+          } else {
+            _this.addLines(_this.widget.options.editable);
+            return $(evt.currentTarget.children[0]).addClass('ui-state-active');
+          }
         });
         buttonset.hallobuttonset();
         toolbar.append(buttonset);

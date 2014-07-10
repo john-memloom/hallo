@@ -45,10 +45,18 @@
         icon: 'icon-align-justify'
         cssClass: @options.buttonCssClass
 
+      if @options.editable.element.css("background-image") == "linear-gradient(#eee 2px, transparent 2px)"
+        toggleLines.children()[0].addClass('ui-state-active')
+
       buttonset.append toggleLines
 
-      toggleLines.on "click", =>
-        @addLines(@widget.options.editable)
+      toggleLines.on "click", (evt) =>
+        if ($(evt.currentTarget.children[0]).hasClass('ui-state-active'))
+          @removeLines(@widget.options.editable)
+          $(evt.currentTarget.children[0]).removeClass('ui-state-active')
+        else
+          @addLines(@widget.options.editable)
+          $(evt.currentTarget.children[0]).addClass('ui-state-active')
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
@@ -72,8 +80,5 @@
     removeLines: (editable) ->
       editable.element.css("background-image", "")
                       .css("background-size", "")        
-
-
-
 
 )(jQuery)      	
