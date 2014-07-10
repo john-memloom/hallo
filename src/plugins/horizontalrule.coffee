@@ -16,16 +16,6 @@
     populateToolbar: (toolbar) ->
       @widget = this
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      makeButton = (label, icon, cmd) =>
-        btn = jQuery '<span></span>'
-        btn.hallobutton
-          uuid: @options.uuid
-          editable: @options.editable
-          label: label
-          icon: icon
-          cssClass: @options.buttonCssClass
-          command: cmd
-        buttonset.append btn
 
       insertHR = jQuery '<span></span>'
       insertHR.hallobutton

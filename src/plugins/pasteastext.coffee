@@ -7,7 +7,6 @@
 #     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
 #
 
-
 ((jQuery) ->
   jQuery.widget 'IKS.pasteastext',
 
