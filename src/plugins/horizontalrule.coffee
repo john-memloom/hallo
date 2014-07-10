@@ -13,7 +13,7 @@
       uuid: ''
       buttonCssClass: null
 
-    active: true
+    active: false
 
     populateToolbar: (toolbar) ->
       @widget = this

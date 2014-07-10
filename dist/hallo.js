@@ -1260,7 +1260,7 @@
         uuid: '',
         buttonCssClass: null
       },
-      active: true,
+      active: false,
       populateToolbar: function(toolbar) {
         var buttonset, insertHR, toggleLines,
           _this = this;
