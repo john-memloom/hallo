@@ -64,7 +64,8 @@
       else
         rangy.createStyleApplier("line-height: #{lh};", {normalize: true}).applyToRange(r)
       $('#' + @widget.options.uuid + '-linespace input').val(size+"x")
-
+      @widget.options.editable.element.trigger('change')
+      
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-size-list'></div>"
       currentFont = @options.editable.element.get(0).tagName.toLowerCase()

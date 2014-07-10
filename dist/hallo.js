@@ -865,12 +865,13 @@
             allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
             if (allOrNothing) {
               el.children().css('color', '');
-              return el.css('color', color);
+              el.css('color', color);
             } else {
-              return rangy.createStyleApplier("color: " + color + ";", {
+              rangy.createStyleApplier("color: " + color + ";", {
                 normalize: true
               }).applyToRange(r);
             }
+            return _this.widget.options.editable.element.trigger('change');
           });
         };
         _ref = ['grays', 'brights', 'shades'];
@@ -970,7 +971,8 @@
                 normalize: true
               }).applyToRange(r);
             }
-            return $('#' + _this.widget.options.uuid + '-fonts span').text(font);
+            $('#' + _this.widget.options.uuid + '-fonts span').text(font);
+            return _this.widget.options.editable.element.trigger('change');
           });
           return fntBtn;
         };
@@ -1072,7 +1074,8 @@
             normalize: true
           }).applyToRange(r);
         }
-        return $('#' + this.widget.options.uuid + '-fontsize input').val(size);
+        $('#' + this.widget.options.uuid + '-fontsize input').val(size);
+        return this.widget.options.editable.element.trigger('change');
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, size, _i, _len, _ref,
@@ -1258,8 +1261,9 @@
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var addLines, buttonset, insertHR, makeButton,
+        var buttonset, insertHR, makeButton, toggleLines,
           _this = this;
+        this.widget = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         makeButton = function(label, icon, cmd) {
           var btn;
@@ -1274,10 +1278,56 @@
           });
           return buttonset.append(btn);
         };
-        insertHR = makeButton("Insert one horizontal line", "icon-minus", 'insertHorizontalRule');
-        addLines = makeButton("Turn on horizontal ruled lines for page", "icon-align-justify", null);
+        insertHR = jQuery('<span></span>');
+        insertHR.hallobutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: "insertHR",
+          icon: 'icon-minus',
+          cssClass: this.options.buttonCssClass,
+          command: 'insertHorizontalRule'
+        });
+        buttonset.append(insertHR);
+        toggleLines = jQuery('<span></span>');
+        toggleLines.hallobutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: "toggleLines",
+          icon: 'icon-align-justify',
+          cssClass: this.options.buttonCssClass
+        });
+        buttonset.append(toggleLines);
+        toggleLines.on("click", function() {
+          return _this.addLines(_this.widget.options.editable);
+        });
         buttonset.hallobuttonset();
-        return toolbar.append(buttonset);
+        toolbar.append(buttonset);
+        this.options.editable.element.on('change', function() {
+          return _this.addLines(_this.options.editable);
+        });
+        this.options.editable.element.on('halloenabled', function() {
+          return _this.options.editable.element.on('change', function() {
+            return _this.addLines(_this.options.editable);
+          });
+        });
+        return this.options.editable.element.on('hallodisabled', function() {
+          return _this.options.editable.element.off('change', function() {
+            return _this.addLines(_this.options.editable);
+          });
+        });
+      },
+      addLines: function(editable) {
+        var fsize, r, size;
+        r = editable.getSelection();
+        size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height');
+        if (size === "normal") {
+          fsize = parseFloat(getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2));
+          size = (fsize * 1.2) + "px";
+        }
+        return editable.element.css("background-image", "linear-gradient(#eee 2px, transparent 2px)").css("background-size", "100% " + size);
+      },
+      removeLines: function(editable) {
+        return editable.element.css("background-image", "").css("background-size", "");
       }
     });
   })(jQuery);
@@ -2768,7 +2818,8 @@
             normalize: true
           }).applyToRange(r);
         }
-        return $('#' + this.widget.options.uuid + '-linespace input').val(size + "x");
+        $('#' + this.widget.options.uuid + '-linespace input').val(size + "x");
+        return this.widget.options.editable.element.trigger('change');
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, currentFont, size, _i, _len, _ref,
