@@ -42,11 +42,11 @@
 
       toggleLines.on "click", (evt) =>
         if ($(evt.currentTarget.children[0]).hasClass('ui-state-active'))
-          @removeLines(@widget.options.editable)
           $(evt.currentTarget.children[0]).removeClass('ui-state-active')
+          @removeLines(@widget.options.editable)
         else
-          @addLines(evt, @widget.options.editable)
           $(evt.currentTarget.children[0]).addClass('ui-state-active')
+          @addLines(evt, @widget.options.editable)
 
       buttonset.hallobuttonset()
       toolbar.append buttonset

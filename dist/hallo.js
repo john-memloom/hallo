@@ -1289,11 +1289,11 @@
         buttonset.append(toggleLines);
         toggleLines.on("click", function(evt) {
           if ($(evt.currentTarget.children[0]).hasClass('ui-state-active')) {
-            _this.removeLines(_this.widget.options.editable);
-            return $(evt.currentTarget.children[0]).removeClass('ui-state-active');
+            $(evt.currentTarget.children[0]).removeClass('ui-state-active');
+            return _this.removeLines(_this.widget.options.editable);
           } else {
-            _this.addLines(evt, _this.widget.options.editable);
-            return $(evt.currentTarget.children[0]).addClass('ui-state-active');
+            $(evt.currentTarget.children[0]).addClass('ui-state-active');
+            return _this.addLines(evt, _this.widget.options.editable);
           }
         });
         buttonset.hallobuttonset();
