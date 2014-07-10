@@ -28,6 +28,19 @@
       buttonset.hallobuttonset()
       buttonset.append target
       buttonset.append @_prepareButton target
+      @_prepareQueryState()
+
+    _prepareQueryState: ->
+      queryState = (event) =>
+        r = @widget.options.editable.getSelection()
+        font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family')
+        $('#' + @widget.options.uuid + '-fonts span').text(font)
+      events = 'keyup paste change mouseup'
+      @options.editable.element.on events, queryState
+      @options.editable.element.on 'halloenabled', =>
+        @options.editable.element.on events, queryState
+      @options.editable.element.on 'hallodisabled', =>
+        @options.editable.element.off events, queryState
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-list'></div>"

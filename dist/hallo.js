@@ -1018,7 +1018,26 @@
         toolbar.append(buttonset);
         buttonset.hallobuttonset();
         buttonset.append(target);
-        return buttonset.append(this._prepareButton(target));
+        buttonset.append(this._prepareButton(target));
+        return this._prepareQueryState();
+      },
+      _prepareQueryState: function() {
+        var events, queryState,
+          _this = this;
+        queryState = function(event) {
+          var font, r;
+          r = _this.widget.options.editable.getSelection();
+          font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family');
+          return $('#' + _this.widget.options.uuid + '-fonts span').text(font);
+        };
+        events = 'keyup paste change mouseup';
+        this.options.editable.element.on(events, queryState);
+        this.options.editable.element.on('halloenabled', function() {
+          return _this.options.editable.element.on(events, queryState);
+        });
+        return this.options.editable.element.on('hallodisabled', function() {
+          return _this.options.editable.element.off(events, queryState);
+        });
       },
       _prepareDropdown: function(contentId) {
         var addFont, contentArea, font, _i, _len, _ref,
@@ -1091,6 +1110,7 @@
       },
       populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
+        this.widget = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
         target = this._prepareDropdown(contentId);
@@ -1102,30 +1122,58 @@
         toolbar.append(buttonset);
         buttonset.hallobuttonset();
         buttonset.append(this._makeSizerButton("up"));
-        return buttonset.append(this._makeSizerButton("down"));
+        buttonset.append(this._makeSizerButton("down"));
+        return this._prepareQueryState();
       },
       _makeSizerButton: function(direction) {
-        var buttonHolder;
-        buttonHolder = jQuery('<span></span>');
-        buttonHolder.hallobutton({
+        var btn,
+          _this = this;
+        btn = jQuery('<span></span>');
+        btn.hallobutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
           icon: direction === "up" ? 'icon-caret-up' : 'icon-caret-down',
           label: direction === "up" ? 'increase font size' : 'decrease font size'
         });
-        return buttonHolder;
+        return btn.on("click", function() {
+          var currentSize, size;
+          currentSize = $('#' + _this.widget.options.uuid + '-fontsize input').val().slice(0, -2);
+          if (direction === "up") {
+            size = parseInt(currentSize, 10) + 1;
+          } else {
+            size = parseInt(currentSize, 10) - 1;
+            if (size < 0) {
+              size = 0;
+            }
+          }
+          return _this.widget.setSize(size + "pt");
+        });
+      },
+      setSize: function(size) {
+        var allOrNothing, el, r;
+        el = this.widget.options.editable.element;
+        r = this.widget.options.editable.getSelection();
+        allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+        if (allOrNothing) {
+          el.children().css('font-size', '');
+          el.css('font-size', size);
+        } else {
+          rangy.createStyleApplier("font-size: " + size + ";", {
+            normalize: true
+          }).applyToRange(r);
+        }
+        return $('#' + this.widget.options.uuid + '-fontsize input').val(size);
       },
       _prepareDropdown: function(contentId) {
-        var addSize, contentArea, currentFont, size, _i, _len, _ref,
+        var addSize, contentArea, size, _i, _len, _ref,
           _this = this;
         contentArea = jQuery("<div id='" + contentId + "' class='font-size-list'></div>");
-        currentFont = this.options.editable.element.get(0).tagName.toLowerCase();
         addSize = function(size) {
           var el;
           el = jQuery("<div class='font-size-item'>" + size + "</div>");
           el.on('click', function() {
-            var font;
-            return font = el.text();
+            size = el.text().trim() + 'pt';
+            return _this.widget.setSize(size);
           });
           return el;
         };
@@ -1142,8 +1190,8 @@
         buttonElement.hallodropdownedit({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'font size',
-          "default": 12,
+          label: 'fontsize',
+          "default": '14pt',
           size: 2,
           target: target,
           targetOffset: {
@@ -1153,6 +1201,24 @@
           cssClass: this.options.buttonCssClass
         });
         return buttonElement;
+      },
+      _prepareQueryState: function() {
+        var events, queryState,
+          _this = this;
+        queryState = function(event) {
+          var r, size;
+          r = _this.widget.options.editable.getSelection();
+          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2);
+          return $('#' + _this.widget.options.uuid + '-fontsize input').val(Math.round(parseFloat(size, 10) * 72 / 96, 0) + "pt");
+        };
+        events = 'keyup paste change mouseup';
+        this.options.editable.element.on(events, queryState);
+        this.options.editable.element.on('halloenabled', function() {
+          return _this.options.editable.element.on(events, queryState);
+        });
+        return this.options.editable.element.on('hallodisabled', function() {
+          return _this.options.editable.element.off(events, queryState);
+        });
       }
     });
   })(jQuery);
