@@ -606,96 +606,6 @@
 
 (function() {
   (function(jQuery) {
-    return jQuery.widget('IKS.applystyle', {
-      options: {
-        editable: null,
-        toolbar: null,
-        uuid: '',
-        elements: ['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'],
-        buttonCssClass: null
-      },
-      populateToolbar: function(toolbar) {
-        var buttonset, contentId, target;
-        buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
-        target = this._prepareDropdown(contentId);
-        toolbar.append(buttonset);
-        buttonset.hallobuttonset();
-        buttonset.append(target);
-        return buttonset.append(this._prepareButton(target));
-      },
-      _prepareDropdown: function(contentId) {
-        var addElement, containingElement, contentArea, element, _i, _len, _ref,
-          _this = this;
-        contentArea = jQuery("<div id=\"" + contentId + "\"></div>");
-        containingElement = this.options.editable.element.get(0).tagName.toLowerCase();
-        addElement = function(element) {
-          var el, events, queryState;
-          el = jQuery("<button class='blockselector'>          <" + element + " class=\"menu-item\">" + element + "</" + element + ">        </button>");
-          if (containingElement === element) {
-            el.addClass('selected');
-          }
-          if (containingElement !== 'div') {
-            el.addClass('disabled');
-          }
-          el.on('click', function() {
-            var tagName;
-            tagName = element.toUpperCase();
-            if (el.hasClass('disabled')) {
-              return;
-            }
-            if (navigator.appName === 'Microsoft Internet Explorer') {
-              _this.options.editable.execute('FormatBlock', "<" + tagName + ">");
-              return;
-            }
-            return _this.options.editable.execute('formatBlock', tagName);
-          });
-          queryState = function(event) {
-            var block;
-            block = document.queryCommandValue('formatBlock');
-            if (block.toLowerCase() === element) {
-              el.addClass('selected');
-              return;
-            }
-            return el.removeClass('selected');
-          };
-          events = 'keyup paste change mouseup';
-          _this.options.editable.element.on(events, queryState);
-          _this.options.editable.element.on('halloenabled', function() {
-            return _this.options.editable.element.on(events, queryState);
-          });
-          _this.options.editable.element.on('hallodisabled', function() {
-            return _this.options.editable.element.off(events, queryState);
-          });
-          return el;
-        };
-        _ref = this.options.elements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          element = _ref[_i];
-          contentArea.append(addElement(element));
-        }
-        return contentArea;
-      },
-      _prepareButton: function(target) {
-        var buttonElement;
-        buttonElement = jQuery('<span></span>');
-        buttonElement.hallodropdownbutton({
-          uuid: this.options.uuid,
-          editable: this.options.editable,
-          label: 'block',
-          icon: 'icon-text-height',
-          target: target,
-          cssClass: this.options.buttonCssClass
-        });
-        return buttonElement;
-      }
-    });
-  })(jQuery);
-
-}).call(this);
-
-(function() {
-  (function(jQuery) {
     return jQuery.widget('IKS.halloblacklist', {
       options: {
         tags: []
@@ -2798,6 +2708,7 @@
       },
       populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
+        this.widget = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         contentId = "" + this.options.uuid + "-" + this.widgetName + "-data";
         target = this._prepareDropdown(contentId);
@@ -2809,18 +2720,54 @@
         toolbar.append(buttonset);
         buttonset.hallobuttonset();
         buttonset.append(this._makeSizerButton("up"));
-        return buttonset.append(this._makeSizerButton("down"));
+        buttonset.append(this._makeSizerButton("down"));
+        return this._prepareQueryState();
       },
       _makeSizerButton: function(direction) {
-        var buttonHolder;
-        buttonHolder = jQuery('<span></span>');
-        buttonHolder.hallobutton({
+        var btn,
+          _this = this;
+        btn = jQuery('<span></span>');
+        btn.hallobutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
           icon: direction === "up" ? 'icon-caret-up' : 'icon-caret-down',
-          label: direction === "up" ? 'increase font size' : 'decrease font size'
+          label: direction === "up" ? 'increase line height' : 'decrease line height'
         });
-        return buttonHolder;
+        btn;
+        return btn.on("click", function() {
+          var currentSize, size;
+          currentSize = $('#' + _this.widget.options.uuid + '-linespace input').val().slice(0, -1);
+          if (direction === "up") {
+            size = parseFloat(currentSize) + 0.1;
+          } else {
+            size = parseFloat(currentSize) - 0.1;
+            if (size < 0.1) {
+              size = 0.1;
+            }
+          }
+          size = Math.round(size * 10) / 10;
+          return _this.widget.setSize(size);
+        });
+      },
+      setSize: function(size) {
+        var allOrNothing, el, lh, r;
+        el = this.widget.options.editable.element;
+        r = this.widget.options.editable.getSelection();
+        allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+        if (size === '1' || size === 1) {
+          lh = 'normal';
+        } else {
+          lh = (parseFloat(size) * 120) + '%';
+        }
+        if (allOrNothing) {
+          el.children().css('line-height', '');
+          el.css('line-height', lh);
+        } else {
+          rangy.createStyleApplier("line-height: " + lh + ";", {
+            normalize: true
+          }).applyToRange(r);
+        }
+        return $('#' + this.widget.options.uuid + '-linespace input').val(size + "x");
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, currentFont, size, _i, _len, _ref,
@@ -2831,8 +2778,8 @@
           var el;
           el = jQuery("<div class='font-size-item'>" + size + "x</div>");
           el.on('click', function() {
-            var font;
-            return font = el.text();
+            size = el.text().trim().slice(0, -1);
+            return _this.widget.setSize(size);
           });
           return el;
         };
@@ -2849,7 +2796,7 @@
         buttonElement.hallodropdownedit({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'font size',
+          label: 'linespace',
           "default": '1x',
           size: 2,
           target: target,
@@ -2860,6 +2807,33 @@
           cssClass: this.options.buttonCssClass
         });
         return buttonElement;
+      },
+      _prepareQueryState: function() {
+        var events, queryState,
+          _this = this;
+        queryState = function(event) {
+          var fsize, r, size;
+          r = _this.widget.options.editable.getSelection();
+          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height');
+          if (size === 'normal') {
+            size = 1;
+          } else {
+            size = parseFloat(size.slice(0, -2));
+            fsize = parseFloat(getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2));
+            console.log(size, fsize, size / fsize);
+            size = (size / fsize) / 1.2;
+            size = Math.round(size * 10) / 10;
+          }
+          return $('#' + _this.widget.options.uuid + '-linespace input').val(size + 'x');
+        };
+        events = 'keyup paste change mouseup';
+        this.options.editable.element.on(events, queryState);
+        this.options.editable.element.on('halloenabled', function() {
+          return _this.options.editable.element.on(events, queryState);
+        });
+        return this.options.editable.element.on('hallodisabled', function() {
+          return _this.options.editable.element.off(events, queryState);
+        });
       }
     });
   })(jQuery);
