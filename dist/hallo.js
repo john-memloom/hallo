@@ -3178,6 +3178,30 @@
 
 (function() {
   (function(jQuery) {
+    return jQuery.widget('IKS.pasteastext', {
+      _create: function() {
+        var editor,
+          _this = this;
+        editor = this.element;
+        return editor.bind('paste', this, function(e) {
+          var pastedText;
+          pastedText = '';
+          if (window.clipboardData && window.clipboardData.getData) {
+            pastedText = window.clipboardData.getData('Text');
+          } else if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+            pastedText = e.originalEvent.clipboardData.getData('text/plain');
+          }
+          document.execCommand('insertText', false, pastedText);
+          return e.preventDefault();
+        });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
     return jQuery.widget("IKS.halloreundo", {
       options: {
         editable: null,
