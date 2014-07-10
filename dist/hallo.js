@@ -1261,23 +1261,10 @@
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonset, insertHR, makeButton, toggleLines,
+        var buttonset, insertHR, toggleLines,
           _this = this;
         this.widget = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        makeButton = function(label, icon, cmd) {
-          var btn;
-          btn = jQuery('<span></span>');
-          btn.hallobutton({
-            uuid: _this.options.uuid,
-            editable: _this.options.editable,
-            label: label,
-            icon: icon,
-            cssClass: _this.options.buttonCssClass,
-            command: cmd
-          });
-          return buttonset.append(btn);
-        };
         insertHR = jQuery('<span></span>');
         insertHR.hallobutton({
           uuid: this.options.uuid,
@@ -3424,26 +3411,56 @@
         buttonCssClass: null
       },
       populateToolbar: function(toolbar) {
-        var buttonize, buttonset,
+        var buttonset, makeButton,
           _this = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
-        buttonize = function(alignment) {
-          var buttonElement;
-          buttonElement = jQuery('<span></span>');
-          buttonElement.hallobutton({
+        makeButton = function(alignment) {
+          var btn;
+          btn = jQuery('<span></span>');
+          btn.hallobutton({
             uuid: _this.options.uuid,
             editable: _this.options.editable,
             label: alignment,
             icon: "icon-question-sign",
             cssClass: _this.options.buttonCssClass
           });
-          return buttonset.append(buttonElement);
+          buttonset.append(btn);
+          return btn.on("click", function(evt) {
+            return _this.verticallyAlign(evt, alignment, _this.options.editable.element);
+          });
         };
-        buttonize("Top");
-        buttonize("Middle");
-        buttonize("Bottom");
         buttonset.hallobuttonset();
+        makeButton("Top");
+        makeButton("Middle");
+        makeButton("Bottom");
         return toolbar.append(buttonset);
+      },
+      verticallyAlign: function(evt, alignment, el) {
+        var alreadyWrapped;
+        alreadyWrapped = $(el).parent().css('display') === 'table';
+        $('.' + this.widgetName).find('button').removeClass('ui-state-active');
+        $(evt.currentTarget.children[0]).addClass('ui-state-active');
+        if (alreadyWrapped) {
+          switch (alignment) {
+            case 'Top':
+              return $(el).unwrap().css('display', '').css('vertical-align', '');
+            case 'Middle':
+              return $(el).css('vertical-align', 'middle');
+            case 'Bottom':
+              return $(el).css('vertical-align', 'bottom');
+          }
+        } else {
+          if (alignment === 'Top') {
+            return;
+          }
+          $(el).wrap("<div style='display:table; padding-left:" + ($(el).css('margin-left')) + ";'>");
+          if (alignment === 'Middle') {
+            $(el).css('display', 'table-cell').css('vertical-align', 'middle');
+          }
+          if (alignment === 'Bottom') {
+            return $(el).css('display', 'table-cell').css('vertical-align', 'bottom');
+          }
+        }
       }
     });
   })(jQuery);
