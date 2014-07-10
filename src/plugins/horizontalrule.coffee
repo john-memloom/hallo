@@ -13,6 +13,8 @@
       uuid: ''
       buttonCssClass: null
 
+    active: true
+
     populateToolbar: (toolbar) ->
       @widget = this
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
@@ -37,29 +39,31 @@
 
       if @options.editable.element.css("background-image") == "linear-gradient(#eee 2px, transparent 2px)"
         toggleLines.children()[0].addClass('ui-state-active')
+        @active = true
 
       buttonset.append toggleLines
 
       toggleLines.on "click", (evt) =>
-        if ($(evt.currentTarget.children[0]).hasClass('ui-state-active'))
+        if (@widget.active == true)
           $(evt.currentTarget.children[0]).removeClass('ui-state-active')
+          @widget.active = false
           @removeLines(@widget.options.editable)
         else
           $(evt.currentTarget.children[0]).addClass('ui-state-active')
-          @addLines(evt, @widget.options.editable)
+          @widget.active = true
+          @addLines(@widget.options.editable)
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
 
-      @options.editable.element.on 'change', (evt) => @addLines(evt, @options.editable)
+      @options.editable.element.on 'change', => @addLines(@options.editable) if @active == true
       @options.editable.element.on 'halloenabled', =>
-        @options.editable.element.on 'change', (evt) => @addLines(evt, @options.editable)
+        @options.editable.element.on 'change',  => @addLines(@options.editable) if @active == true
       @options.editable.element.on 'hallodisabled', =>
-        @options.editable.element.off 'change', (evt) => @addLines(evt, @options.editable)
+        @options.editable.element.off 'change',  => @addLines(@options.editable) if @active == true
 
 
-    addLines: (evt, editable) ->
-      return unless $(evt.currentTarget.children[0]).hasClass('ui-state-active')
+    addLines: (editable) ->
       r = editable.getSelection()
       size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height')
       if size == "normal"

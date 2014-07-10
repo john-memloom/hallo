@@ -1260,6 +1260,7 @@
         uuid: '',
         buttonCssClass: null
       },
+      active: true,
       populateToolbar: function(toolbar) {
         var buttonset, insertHR, toggleLines,
           _this = this;
@@ -1285,38 +1286,44 @@
         });
         if (this.options.editable.element.css("background-image") === "linear-gradient(#eee 2px, transparent 2px)") {
           toggleLines.children()[0].addClass('ui-state-active');
+          this.active = true;
         }
         buttonset.append(toggleLines);
         toggleLines.on("click", function(evt) {
-          if ($(evt.currentTarget.children[0]).hasClass('ui-state-active')) {
+          if (_this.widget.active === true) {
             $(evt.currentTarget.children[0]).removeClass('ui-state-active');
+            _this.widget.active = false;
             return _this.removeLines(_this.widget.options.editable);
           } else {
             $(evt.currentTarget.children[0]).addClass('ui-state-active');
-            return _this.addLines(evt, _this.widget.options.editable);
+            _this.widget.active = true;
+            return _this.addLines(_this.widget.options.editable);
           }
         });
         buttonset.hallobuttonset();
         toolbar.append(buttonset);
-        this.options.editable.element.on('change', function(evt) {
-          return _this.addLines(evt, _this.options.editable);
+        this.options.editable.element.on('change', function() {
+          if (_this.active === true) {
+            return _this.addLines(_this.options.editable);
+          }
         });
         this.options.editable.element.on('halloenabled', function() {
-          return _this.options.editable.element.on('change', function(evt) {
-            return _this.addLines(evt, _this.options.editable);
+          return _this.options.editable.element.on('change', function() {
+            if (_this.active === true) {
+              return _this.addLines(_this.options.editable);
+            }
           });
         });
         return this.options.editable.element.on('hallodisabled', function() {
-          return _this.options.editable.element.off('change', function(evt) {
-            return _this.addLines(evt, _this.options.editable);
+          return _this.options.editable.element.off('change', function() {
+            if (_this.active === true) {
+              return _this.addLines(_this.options.editable);
+            }
           });
         });
       },
-      addLines: function(evt, editable) {
+      addLines: function(editable) {
         var fsize, r, size;
-        if (!$(evt.currentTarget.children[0]).hasClass('ui-state-active')) {
-          return;
-        }
         r = editable.getSelection();
         size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height');
         if (size === "normal") {
