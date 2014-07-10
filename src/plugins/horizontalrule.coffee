@@ -45,20 +45,21 @@
           @removeLines(@widget.options.editable)
           $(evt.currentTarget.children[0]).removeClass('ui-state-active')
         else
-          @addLines(@widget.options.editable)
+          @addLines(evt, @widget.options.editable)
           $(evt.currentTarget.children[0]).addClass('ui-state-active')
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
 
-      @options.editable.element.on 'change', => @addLines(@options.editable)
+      @options.editable.element.on 'change', (evt) => @addLines(evt, @options.editable)
       @options.editable.element.on 'halloenabled', =>
-        @options.editable.element.on 'change', => @addLines(@options.editable)
+        @options.editable.element.on 'change', (evt) => @addLines(evt, @options.editable)
       @options.editable.element.on 'hallodisabled', =>
-        @options.editable.element.off 'change', => @addLines(@options.editable)
+        @options.editable.element.off 'change', (evt) => @addLines(evt, @options.editable)
 
 
-    addLines: (editable) ->
+    addLines: (evt, editable) ->
+      return unless $(evt.currentTarget.children[0]).hasClass('ui-state-active')
       r = editable.getSelection()
       size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height')
       if size == "normal"

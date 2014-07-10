@@ -1292,28 +1292,31 @@
             _this.removeLines(_this.widget.options.editable);
             return $(evt.currentTarget.children[0]).removeClass('ui-state-active');
           } else {
-            _this.addLines(_this.widget.options.editable);
+            _this.addLines(evt, _this.widget.options.editable);
             return $(evt.currentTarget.children[0]).addClass('ui-state-active');
           }
         });
         buttonset.hallobuttonset();
         toolbar.append(buttonset);
-        this.options.editable.element.on('change', function() {
-          return _this.addLines(_this.options.editable);
+        this.options.editable.element.on('change', function(evt) {
+          return _this.addLines(evt, _this.options.editable);
         });
         this.options.editable.element.on('halloenabled', function() {
-          return _this.options.editable.element.on('change', function() {
-            return _this.addLines(_this.options.editable);
+          return _this.options.editable.element.on('change', function(evt) {
+            return _this.addLines(evt, _this.options.editable);
           });
         });
         return this.options.editable.element.on('hallodisabled', function() {
-          return _this.options.editable.element.off('change', function() {
-            return _this.addLines(_this.options.editable);
+          return _this.options.editable.element.off('change', function(evt) {
+            return _this.addLines(evt, _this.options.editable);
           });
         });
       },
-      addLines: function(editable) {
+      addLines: function(evt, editable) {
         var fsize, r, size;
+        if (!$(evt.currentTarget.children[0]).hasClass('ui-state-active')) {
+          return;
+        }
         r = editable.getSelection();
         size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height');
         if (size === "normal") {
