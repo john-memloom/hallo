@@ -52,7 +52,7 @@
             el.css('color', color)
           else
             rangy.createStyleApplier("color: #{color};", {normalize: true}).applyToRange(r)
-          @widget.options.editable.element.trigger('change')
+          @widget.options.editable.element.trigger('hallomodified')
       for sectionName in ['grays', 'brights', 'shades']
         section = jQuery "<div class='font-color-selection' style='height: #{(@options[sectionName].length/10)*17}px;'></div>"
         for color in @options[sectionName]

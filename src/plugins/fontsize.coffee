@@ -59,7 +59,7 @@
       else
         rangy.createStyleApplier("font-size: #{size};", {normalize: true}).applyToRange(r)
       $('#' + @widget.options.uuid + '-fontsize input').val(size)
-      @widget.options.editable.element.trigger('change')
+      @widget.options.editable.element.trigger('hallomodified')
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-size-list'></div>"

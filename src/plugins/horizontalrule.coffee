@@ -52,6 +52,7 @@
           $(evt.currentTarget.children[0]).addClass('ui-state-active')
           @widget.active = true
           @addLines(@widget.options.editable)
+        @widget.options.editable.element.trigger('hallomodified')
 
       buttonset.hallobuttonset()
       toolbar.append buttonset

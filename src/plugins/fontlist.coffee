@@ -57,7 +57,7 @@
           else
             rangy.createStyleApplier("font-family: #{font};", {normalize: true}).applyToRange(r)
           $('#' + @widget.options.uuid + '-fonts span').text(font)
-          @widget.options.editable.element.trigger('change')
+          @widget.options.editable.element.trigger('hallomodified')
         fntBtn
       for font in @options.fonts
         if font == '-'

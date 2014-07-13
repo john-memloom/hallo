@@ -95,7 +95,7 @@
       @options.dialog.on 'click', 'button', ->
         html = widget.options.dialog.children('.html_source').val()
         widget.options.editable.element.html html
-        widget.options.editable.element.trigger('change')
+        widget.options.editable.element.trigger('hallomodified')
         false
 
     _closeDialog: ->

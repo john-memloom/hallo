@@ -871,7 +871,7 @@
                 normalize: true
               }).applyToRange(r);
             }
-            return _this.widget.options.editable.element.trigger('change');
+            return _this.widget.options.editable.element.trigger('hallomodified');
           });
         };
         _ref = ['grays', 'brights', 'shades'];
@@ -972,7 +972,7 @@
               }).applyToRange(r);
             }
             $('#' + _this.widget.options.uuid + '-fonts span').text(font);
-            return _this.widget.options.editable.element.trigger('change');
+            return _this.widget.options.editable.element.trigger('hallomodified');
           });
           return fntBtn;
         };
@@ -1075,7 +1075,7 @@
           }).applyToRange(r);
         }
         $('#' + this.widget.options.uuid + '-fontsize input').val(size);
-        return this.widget.options.editable.element.trigger('change');
+        return this.widget.options.editable.element.trigger('hallomodified');
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, size, _i, _len, _ref,
@@ -1293,12 +1293,13 @@
           if (_this.widget.active === true) {
             $(evt.currentTarget.children[0]).removeClass('ui-state-active');
             _this.widget.active = false;
-            return _this.removeLines(_this.widget.options.editable);
+            _this.removeLines(_this.widget.options.editable);
           } else {
             $(evt.currentTarget.children[0]).addClass('ui-state-active');
             _this.widget.active = true;
-            return _this.addLines(_this.widget.options.editable);
+            _this.addLines(_this.widget.options.editable);
           }
+          return _this.widget.options.editable.element.trigger('hallomodified');
         });
         buttonset.hallobuttonset();
         toolbar.append(buttonset);
@@ -1429,7 +1430,7 @@
         return this.options.dialog.on('click', 'button', function() {
           html = widget.options.dialog.children('.html_source').val();
           widget.options.editable.element.html(html);
-          widget.options.editable.element.trigger('change');
+          widget.options.editable.element.trigger('hallomodified');
           return false;
         });
       },
@@ -2825,7 +2826,7 @@
           }).applyToRange(r);
         }
         $('#' + this.widget.options.uuid + '-linespace input').val(size + "x");
-        return this.widget.options.editable.element.trigger('change');
+        return this.widget.options.editable.element.trigger('hallomodified');
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, currentFont, size, _i, _len, _ref,
