@@ -13,17 +13,20 @@
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
       buttonize = (alignment) =>
         buttonElement = jQuery '<span></span>'
+        icon = "icon-align-#{alignment.toLowerCase()}"
+        icon = "icon-align-justify" if alignment == 'Full'
         buttonElement.hallobutton
           uuid: @options.uuid
           editable: @options.editable
           label: alignment
           command: "justify#{alignment}"
-          icon: "icon-align-#{alignment.toLowerCase()}"
+          icon: icon
           cssClass: @options.buttonCssClass
         buttonset.append buttonElement
       buttonize "Left"
       buttonize "Center"
       buttonize "Right"
+      buttonize "Full"
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
