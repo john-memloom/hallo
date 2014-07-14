@@ -92,7 +92,7 @@
         r = @widget.options.editable.getSelection()
         size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2)
         $('#' + @widget.options.uuid + '-fontsize input').val(Math.round((parseFloat(size,10)*72/96),0)+"pt")
-      events = 'keyup paste change mouseup'
+      events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
         @options.editable.element.on events, queryState

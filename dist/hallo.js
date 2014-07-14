@@ -941,7 +941,7 @@
           font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family');
           return $('#' + _this.widget.options.uuid + '-fonts span').text(font);
         };
-        events = 'keyup paste change mouseup';
+        events = 'keyup paste change hallomodified mouseup';
         this.options.editable.element.on(events, queryState);
         this.options.editable.element.on('halloenabled', function() {
           return _this.options.editable.element.on(events, queryState);
@@ -1124,7 +1124,7 @@
           size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2);
           return $('#' + _this.widget.options.uuid + '-fontsize input').val(Math.round(parseFloat(size, 10) * 72 / 96, 0) + "pt");
         };
-        events = 'keyup paste change mouseup';
+        events = 'keyup paste change mouseup hallomodified';
         this.options.editable.element.on(events, queryState);
         this.options.editable.element.on('halloenabled', function() {
           return _this.options.editable.element.on(events, queryState);
@@ -1303,20 +1303,20 @@
         });
         buttonset.hallobuttonset();
         toolbar.append(buttonset);
-        this.options.editable.element.on('change', function() {
+        this.options.editable.element.on('hallomodified', function() {
           if (_this.active === true) {
             return _this.addLines(_this.options.editable);
           }
         });
         this.options.editable.element.on('halloenabled', function() {
-          return _this.options.editable.element.on('change', function() {
+          return _this.options.editable.element.on('hallomodified', function() {
             if (_this.active === true) {
               return _this.addLines(_this.options.editable);
             }
           });
         });
         return this.options.editable.element.on('hallodisabled', function() {
-          return _this.options.editable.element.off('change', function() {
+          return _this.options.editable.element.off('hallomodified', function() {
             if (_this.active === true) {
               return _this.addLines(_this.options.editable);
             }
@@ -2890,7 +2890,7 @@
           }
           return $('#' + _this.widget.options.uuid + '-linespace input').val(size + 'x');
         };
-        events = 'keyup paste change mouseup';
+        events = 'keyup paste change mouseup hallomodified';
         this.options.editable.element.on(events, queryState);
         this.options.editable.element.on('halloenabled', function() {
           return _this.options.editable.element.on(events, queryState);
@@ -3454,30 +3454,14 @@
       },
       verticallyAlign: function(evt, alignment, el) {
         var alreadyWrapped;
-        alreadyWrapped = $(el).parent().css('display') === 'table';
+        alreadyWrapped = $(el).css('display') === 'table';
         $('.' + this.widgetName).find('button').removeClass('ui-state-active');
         $(evt.currentTarget.children[0]).addClass('ui-state-active');
-        if (alreadyWrapped) {
-          switch (alignment) {
-            case 'Top':
-              return $(el).unwrap().css('display', '').css('vertical-align', '');
-            case 'Middle':
-              return $(el).css('vertical-align', 'middle');
-            case 'Bottom':
-              return $(el).css('vertical-align', 'bottom');
-          }
-        } else {
-          if (alignment === 'Top') {
-            return;
-          }
-          $(el).wrap("<div style='display:table; padding-left:" + ($(el).css('margin-left')) + ";'>");
-          if (alignment === 'Middle') {
-            $(el).css('display', 'table-cell').css('vertical-align', 'middle');
-          }
-          if (alignment === 'Bottom') {
-            return $(el).css('display', 'table-cell').css('vertical-align', 'bottom');
-          }
+        if (!alreadyWrapped) {
+          $(el).wrapInner('<div style="display: table-cell;"></div>');
+          $(el).css('display', 'table');
         }
+        return $(el).children().css('vertical-align', alignment.toLowerCase());
       }
     });
   })(jQuery);

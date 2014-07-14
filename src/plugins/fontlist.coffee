@@ -35,7 +35,7 @@
         r = @widget.options.editable.getSelection()
         font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family')
         $('#' + @widget.options.uuid + '-fonts span').text(font)
-      events = 'keyup paste change mouseup'
+      events = 'keyup paste change hallomodified mouseup'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
         @options.editable.element.on events, queryState

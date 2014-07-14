@@ -104,7 +104,7 @@
           size = (size / fsize) / 1.2
           size = Math.round(size*10)/10
         $('#' + @widget.options.uuid + '-linespace input').val(size + 'x')
-      events = 'keyup paste change mouseup'
+      events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
         @options.editable.element.on events, queryState

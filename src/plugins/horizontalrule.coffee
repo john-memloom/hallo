@@ -57,11 +57,11 @@
       buttonset.hallobuttonset()
       toolbar.append buttonset
 
-      @options.editable.element.on 'change', => @addLines(@options.editable) if @active == true
+      @options.editable.element.on 'hallomodified', => @addLines(@options.editable) if @active == true
       @options.editable.element.on 'halloenabled', =>
-        @options.editable.element.on 'change',  => @addLines(@options.editable) if @active == true
+        @options.editable.element.on 'hallomodified',  => @addLines(@options.editable) if @active == true
       @options.editable.element.on 'hallodisabled', =>
-        @options.editable.element.off 'change',  => @addLines(@options.editable) if @active == true
+        @options.editable.element.off 'hallomodified',  => @addLines(@options.editable) if @active == true
 
 
     addLines: (editable) ->
