@@ -25,6 +25,7 @@
         buttonset.append btn
         btn.on "click", (evt) =>
           @verticallyAlign(evt, alignment, @options.editable.element)
+          @options.editable.element.trigger('hallomodified')
 
       buttonset.hallobuttonset()
       makeButton "Top"
@@ -33,19 +34,13 @@
       toolbar.append buttonset
 
     verticallyAlign: (evt, alignment, el) ->
-      alreadyWrapped = $(el).parent().css('display') == 'table'
+      alreadyWrapped = $(el).css('display') == 'table'
       $('.'+@widgetName).find('button').removeClass('ui-state-active')
       $(evt.currentTarget.children[0]).addClass('ui-state-active')
-      if (alreadyWrapped)
-        switch alignment
-          when 'Top' then $(el).unwrap().css('display', '').css('vertical-align', '')
-          when 'Middle' then $(el).css('vertical-align', 'middle' )
-          when 'Bottom' then $(el).css('vertical-align', 'bottom')
-      else
-        return if alignment == 'Top'
-        $(el).wrap("<div style='display:table; padding-left:#{$(el).css('margin-left')};'>")
-        $(el).css('display', 'table-cell').css('vertical-align', 'middle' ) if alignment == 'Middle'
-        $(el).css('display', 'table-cell').css('vertical-align', 'bottom' ) if alignment == 'Bottom'
+      unless alreadyWrapped
+        $(el).wrapInner('<div style="display: table-cell;"></div>')
+        $(el).css('display', 'table')
+      $(el).children().css('vertical-align', alignment.toLowerCase())
 
 
 )(jQuery)      	
