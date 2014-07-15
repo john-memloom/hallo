@@ -40,6 +40,10 @@
         return Number(val)
       }
 
+      function loadTypekitFont(typekitId) {
+        return "Courier New"
+      }
+
       jQuery(document).ready(function() {
         editor = jQuery('.editable').hallo({
           toolbar: 'halloToolbarFixed',
@@ -50,7 +54,18 @@
             
             verticalalign: {},
             horizontalrule: {},
-            fontlist: { fonts: ['Arial', 'Times', 'Verdana', '-', 'Museo Sans', 'Museo Slab', 'Bree', 'Grafolita Script', 'Droid Serif', 'Kepler', 'Grandma']},
+            fontlist: {
+                    fonts: [
+                      '.menu_heading System Fonts',
+                      'Arial',
+                      'Times',
+                      'Verdana',
+                      '-',
+                      '.menu_heading Typekit Fonts',
+                      {fontId: 'wckqr123', fontName: 'fancy font 1', sampleIMG: 'font1.png'},
+                      {fontId: 'asdf344',  fontName: 'fancy font 2', sampleIMG: 'font2.png'}
+                    ],
+                    fontCallback: loadTypekitFont },
             fontcolor: {},
             fontsize: {},
             linespace: {},

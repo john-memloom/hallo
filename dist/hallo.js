@@ -893,7 +893,7 @@
         buttonElement.hallodropdownbutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'fonts',
+          label: 'fontcolors',
           img: 'colors.gif',
           target: target,
           targetOffset: {
@@ -916,9 +916,8 @@
         editable: null,
         toolbar: null,
         uuid: '',
-        fonts: ['Arial', 'Times New Roman'],
         buttonCssClass: null,
-        widget: null
+        fonts: ['Arial', 'Times', 'Verdana']
       },
       populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
@@ -951,40 +950,64 @@
         });
       },
       _prepareDropdown: function(contentId) {
-        var addFont, contentArea, font, _i, _len, _ref,
+        var addCallback, addFont, applyFont, contentArea, font, heading, klass, txt, _i, _len, _ref,
           _this = this;
-        contentArea = jQuery("<div id='" + contentId + "' class='font-list'></div>");
+        applyFont = function(font, name) {
+          var allOrNothing, el, r;
+          el = _this.widget.options.editable.element;
+          r = _this.widget.options.editable.getSelection();
+          allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+          if (allOrNothing) {
+            el.children().css('font-family', '');
+            el.css('font-family', font);
+          } else {
+            rangy.createStyleApplier("font-family: " + font + ";", {
+              normalize: true
+            }).applyToRange(r);
+          }
+          $('#' + _this.widget.options.uuid + '-fonts span').text(name);
+          return _this.widget.options.editable.element.trigger('hallomodified');
+        };
         addFont = function(font) {
           var fntBtn;
           fntBtn = jQuery("<div class='font-item' style='font-family: " + font + ";'>" + font + "</div>");
           fntBtn.on('click', function() {
-            var allOrNothing, el, r;
             font = fntBtn.text();
-            el = _this.widget.options.editable.element;
-            r = _this.widget.options.editable.getSelection();
-            allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
-            if (allOrNothing) {
-              el.children().css('font-family', '');
-              el.css('font-family', font);
-            } else {
-              rangy.createStyleApplier("font-family: " + font + ";", {
-                normalize: true
-              }).applyToRange(r);
-            }
-            $('#' + _this.widget.options.uuid + '-fonts span').text(font);
-            return _this.widget.options.editable.element.trigger('hallomodified');
+            return applyFont(font, font);
           });
           return fntBtn;
         };
+        addCallback = function(obj) {
+          var fntBtn;
+          fntBtn = jQuery("<div class='font-item'><img src='" + obj.sampleIMG + "'/></img></div>");
+          fntBtn.on('click', function() {
+            var font;
+            font = _this.widget.options.fontCallback(obj.fontId);
+            return applyFont(font, obj.fontName);
+          });
+          return fntBtn;
+        };
+        contentArea = jQuery("<div id='" + contentId + "' class='font-list'></div>");
         _ref = this.options.fonts;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           font = _ref[_i];
-          if (font === '-') {
-            contentArea.append('<hr />');
+          console.log(font);
+          if (typeof font === 'string') {
+            if (font === '-') {
+              contentArea.append('<hr />');
+            } else if (font[0] === '.') {
+              klass = font.split(' ')[0].substring(1, 999);
+              txt = font.substring(font.indexOf(' ') + 1, 999);
+              heading = jQuery('<div></div>').text(txt).addClass(klass);
+              contentArea.append(heading);
+            } else {
+              contentArea.append(addFont(font));
+            }
           } else {
-            contentArea.append(addFont(font));
+            contentArea.append(addCallback(font));
           }
         }
+        console.log(contentArea.html());
         return contentArea;
       },
       _prepareButton: function(target) {
@@ -3443,7 +3466,8 @@
           });
           buttonset.append(btn);
           return btn.on("click", function(evt) {
-            return _this.verticallyAlign(evt, alignment, _this.options.editable.element);
+            _this.verticallyAlign(evt, alignment, _this.options.editable.element);
+            return _this.options.editable.element.trigger('hallomodified');
           });
         };
         buttonset.hallobuttonset();
