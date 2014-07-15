@@ -981,9 +981,8 @@
           var fntBtn;
           fntBtn = jQuery("<div class='font-item'><img src='" + obj.sampleIMG + "'/></img></div>");
           fntBtn.on('click', function() {
-            var font;
-            font = _this.widget.options.fontCallback(obj.fontId);
-            return applyFont(font, obj.fontName);
+            _this.widget.options.fontCallback(obj.family);
+            return applyFont(obj.family, obj.fontName);
           });
           return fntBtn;
         };

@@ -20,16 +20,16 @@
 
       # alternatively, fonts[] can contain an object of the following structure
       #   {
-      #     fontId: user_defined_string, 
+      #     family: css font-family, 
       #     fontName: what_to_display_in_control, 
       #     sampleIMG: path_to_img_containing_sample_text_displayed_in_drop_down 
       #   }
-      # in the latter case provide fontCallback: pointing to a function that takes the fontId and returns the font-family.  
+      # in the latter case provide fontCallback: pointing to a function that takes the family and returns the font-family.  
       # The intent of the callback is to allow the host application to load the font only when used.
       #
       # fonts: [
-      #   {fontId: 'wckqr123', fontName: 'fancy font 1', sampleIMG: 'fancy_font_1_sample.png'}
-      #   {fontId: 'asdf344',  fontName: 'fancy font 2', sampleIMG: 'fancy_font_2_sample.png'}
+      #   {family: 'brush-script', fontName: 'fancy font 1', sampleIMG: 'fancy_font_1_sample.png'}
+      #   {family: 'museo-sans',  fontName: 'fancy font 2', sampleIMG: 'fancy_font_2_sample.png'}
       # ]
       # fontCallback: loadTypeKitFont
       # 
@@ -46,8 +46,8 @@
       #     'Verdana'
       #     '-'
       #     '.menu_heading Typekit Fonts'
-      #     {fontId: 'wckqr123', fontName: 'fancy font 1', sampleIMG: 'fancy_font_1_sample.png'}
-      #     {fontId: 'asdf344',  fontName: 'fancy font 2', sampleIMG: 'fancy_font_2_sample.png'}
+      #     {family: 'brush-script', fontName: 'fancy font 1', sampleIMG: 'fancy_font_1_sample.png'}
+      #     {family: 'museo-sans',  fontName: 'fancy font 2', sampleIMG: 'fancy_font_2_sample.png'}
       #   ]
 
     populateToolbar: (toolbar) ->
@@ -97,8 +97,8 @@
       addCallback = (obj) =>
         fntBtn = jQuery "<div class='font-item'><img src='#{obj.sampleIMG}'/></img></div>"
         fntBtn.on 'click', => 
-          font = @widget.options.fontCallback(obj.fontId)
-          applyFont(font, obj.fontName)
+          @widget.options.fontCallback(obj.family)
+          applyFont(obj.family, obj.fontName)
         fntBtn
 
       contentArea = jQuery "<div id='#{contentId}' class='font-list'></div>"
