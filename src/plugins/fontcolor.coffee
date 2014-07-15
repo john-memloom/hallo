@@ -65,7 +65,7 @@
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
-        label: 'fonts'
+        label: 'fontcolors'
         img: 'colors.gif'
         target: target
         targetOffset: {x:0, y:0}
