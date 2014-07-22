@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css" />
-    <link rel="stylesheet" href="hallo.css" />
+    <link rel="stylesheet" href="flat.css" />
     <link rel="stylesheet" href="fontawesome/css/font-awesome.css" charset="utf-8" />
 <!--[if lt IE 9]>
     <link rel="stylesheet" href="fontawesome/css/font-awesome-ie7.css" charset="utf-8" />
@@ -15,22 +15,14 @@
     <script src="../lib/rangy/rangy-styleapplier.js"></script>
     <script src="../dist/hallo.js"></script>
     <title>Hallo example</title>
+
   </head>
   <body>
 
-    <p id="modified">Editables have not been modified</p>
-
-    <br />
-    <br />
-    <br />
-    <br />
-
-    <div class="editable" style="width: 600px; height: 120px; background-color: lightyellow; font-size: 100px; margin: 20px;">
-        A big title
-    </div>
+    <div id="text_editor_toolbar" style="height: 100px;"></div>
 
     <div class="editable" style="width: 600px; height: 200px; background-color: lightyellow; margin: 20px; font-family: 'Arial';">
-        <b>Lorem ipsum</b> dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+          <b>Lorem ipsum</b> dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
     </div>
 
 
@@ -47,49 +39,94 @@
       jQuery(document).ready(function() {
         editor = jQuery('.editable').hallo({
           toolbar: 'halloToolbarFixed',
+          parentElement: '#text_editor_toolbar',
+          buttonCssClass: 'flat',
           plugins: {
-            halloformat: {'formattings': {bold: true, italic: true, strikethrough: true, underline: true}},
-            hallolists: {},
-            hallojustify: {},
-            
-            verticalalign: {},
-            horizontalrule: {},
-            fontlist: {
-                    fonts: [
-                      '.menu_heading System Fonts',
-                      'Arial',
-                      'Times',
-                      'Verdana',
-                      '-',
-                      '.menu_heading Typekit Fonts',
-                      {family: 'museo-sans', fontName: 'fancy font 1', sampleIMG: 'font1.png'},
-                      {family: 'ff-super-web',  fontName: 'fancy font 2', sampleIMG: 'font2.png'}
-                    ],
-                    fontCallback: loadTypekitFont },
-            fontcolor: {},
-            fontsize: {},
-            linespace: {},
-            pasteastext: {},
 
+            halloformat: { 
+              formattings: {
+                bold:      ['svg-icons/textedit_boldoff.svg', 'svg-icons/textedit_boldon.svg'], 
+                italic:    ['svg-icons/textedit_italicoff.svg', 'svg-icons/textedit_italicon.svg'], 
+                underline: ['svg-icons/textedit_underlineoff.svg', 'svg-icons/textedit_underlineon.svg'] 
+              }
+            },
+            
+            hallojustify: {
+              style:    'droplist',
+              alignments: {
+                left:   'svg-icons/textedit_halign_left.svg',
+                center: 'svg-icons/textedit_halign_center.svg',
+                right:  'svg-icons/textedit_halign_right.svg',
+                full:   'svg-icons/textedit_halign_full.svg'
+              }
+            },
+
+            verticalalign: {
+              style:    'droplist',
+              alignments: {
+                top:    'svg-icons/textedit_valign_top.svg',
+                middle: 'svg-icons/textedit_valign_middle.svg',
+                bottom: 'svg-icons/textedit_valign_bottom.svg'
+              }
+            },
+
+            hallolists: {
+              lists: {
+                unordered: ['svg-icons/textedit_list_bullet_off.svg', 'svg-icons/textedit_list_bullet_on.svg'],
+                ordered:   ['svg-icons/textedit_list_numbered_off.svg', 'svg-icons/textedit_list_numbered_on.svg']
+              }
+            },
+
+            linespace: {
+              img: 'svg-icons/textedit_linespacing.svg',
+              sizes: [0.5,1,1.5,2,2.5]
+            },
+
+            listlines: {
+              lineStyles: {
+                solid:  ['svg-icons/textedit_listlines_lined_off.svg','svg-icons/textedit_listlines_lined_on.svg'],
+                dotted: ['svg-icons/textedit_listlines_dotted_off.svg','svg-icons/textedit_listlines_dotted_on.svg']
+              }
+            },
+
+            horizontalrule: {
+              img: 'svg-icons/textedit_insert_HR.svg'
+            },
+
+            fontlist: {
+              fonts: [
+                {family: 'museo-sans', fontName: 'Museo Sans'},
+                {family: 'museo-sans', fontName: 'Museo Slab'},
+                {family: 'museo-sans', fontName: 'Bree'},
+                {family: 'museo-sans', fontName: 'Grafolita'},
+                {family: 'museo-sans', fontName: 'Droid Serif'},
+                {family: 'museo-sans', fontName: 'Kepler'},
+                {family: 'museo-sans', fontName: 'Grandma'},
+              ],
+              fontCallback: loadTypekitFont 
+            },
+            
+            fontsize: {
+              sizes: [12,14,16,17,24,36,48,72,96,128,144]
+            },
+            
+            fontcolor: {},
+
+            halloreundo: {
+              undoImg: 'svg-icons/textedit_undo.svg',
+              redoImg: 'svg-icons/textedit_redo.svg'
+            },
+
+            // organizational plugins
+            hallotoolbarlinebreak: { breakAfter: ['horizontalrule'] },
+
+            // non-visual plugins
+            pasteastext: {},
             halloblacklist: { 'tags': ['a', 'input', 'script'] },
-            hallotoolbarlinebreak: { breakAfter: ['horizontalrule'] }
           },
           editable: true
         });
 
-        jQuery('.editable').bind('hallomodified', function(event, data) {
-            jQuery('#modified').html("Editables modified");
-            // console.log(event, data)
-        });
-        jQuery('.editable').bind('halloselected', function(event, data) {
-            jQuery('#modified').html("Selection made");
-        });
-        jQuery('.editable').bind('hallounselected', function(event, data) {
-            jQuery('#modified').html("Selection removed");
-        });
-        jQuery('.editable').bind('hallorestored', function(event, data) {
-            jQuery('#modified').html("restored");
-        });
       });
 
       jQuery('.editable').bind('hellodeactivated', function() {

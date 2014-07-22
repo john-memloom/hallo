@@ -7,12 +7,12 @@
 #     plugin may be freely distributed with Hallo.js utilizing same license as Hallo.js 
 #
 ((jQuery) ->
-  jQuery.widget 'IKS.fontsize',
+  jQuery.widget 'IKS.columns',
     options:
       editable: null
       toolbar: null
       uuid: ''
-      sizes: [8,9,10,11,12,14,18,24,30,36,48,60,72,96]
+      sizes: [1, 2, 3, 4]
       buttonCssClass: null
 
     populateToolbar: (toolbar) ->
@@ -24,73 +24,67 @@
       buttonset.hallobuttonset()
       buttonset.append target
       buttonset.append @_prepareButton target
-      # put the increment buttons in their own buttonset      
-      # buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      # toolbar.append buttonset
-      # buttonset.hallobuttonset()
-      # buttonset.append @_makeSizerButton("up")
-      # buttonset.append @_makeSizerButton("down")
       @_prepareQueryState()
 
-
-    _makeSizerButton: (direction) ->
-      btn = jQuery '<span></span>'
-      btn.hallobutton
-        uuid: @options.uuid
-        editable: @options.editable
-        icon: if direction=="up" then 'icon-caret-up' else 'icon-caret-down'
-        label: if direction=="up" then 'increase font size' else 'decrease font size'
-      btn.on "click", =>
-        currentSize = $('#' + @widget.options.uuid + '-fontsize input').val().slice(0,-2)
-        if (direction=="up")
-          size = parseInt(currentSize,10) + 1 
-        else
-          size = parseInt(currentSize,10) - 1 
-          size = 0 if (size < 0)
-        @widget.setSize(size)
-
-    setSize: (size) ->
+    setSize: (cols) ->
       el = @widget.options.editable.element
       r = @widget.options.editable.getSelection()
       allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
-      if (allOrNothing)              
-        el.children().css('font-size', '')
-        el.css('font-size', size + 'px')
+      return if (cols==0 || cols==@_getCurrentCols())
+      if (allOrNothing)
+        el.css('column-count', cols)
+        el.css('column-gap', '20px')
+        el.css('-moz-column-count', cols)
+        el.css('-moz-column-gap', '20px')
+        el.css('-webkit-column-count', cols)
+        el.css('-webkit-column-gap', '20px')
       else
-        rangy.createStyleApplier("font-size: #{size}px;", {normalize: true}).applyToRange(r)
-      el = $('#' + @widget.options.uuid + '-fontsize').children().children()[0]
-      $(el).text(size)
-      @widget.options.editable.element.trigger('hallomodified')
+        template = "column-count: #{cols}; column-gap: 20px;"
+        style = template
+        style += template.replace(/column-/g, '-moz-column-')
+        style += template.replace(/column-/g, '-webkit-column-')
+        rangy.createStyleApplier(style, {normalize: true, elementTagName: "div"}).applyToRange(r)
 
+      $('#' + @widget.options.uuid + '-columns input').val(cols + ' col')
+      @widget.options.editable.element.trigger('hallomodified')
+      
     _prepareDropdown: (contentId) ->
-      contentArea = jQuery "<div id='#{contentId}' class='font-size-list ui-droplist'></div>"
+      contentArea = jQuery "<div id='#{contentId}' class='font-size-list'></div>"
+      currentFont = @options.editable.element.get(0).tagName.toLowerCase()
       addSize = (size) =>
-        el = jQuery "<div class='font-size-item ui-text-only'>#{size}</div>"
+        el = jQuery "<div class='font-size-item'>#{size} col</div>"
         el.on 'click', =>
+          size = el.text().trim().slice(0,-3) 
           @widget.setSize(size)
+        el
       for size in @options.sizes
         contentArea.append addSize size 
       contentArea
 
     _prepareButton: (target) ->
       buttonElement = jQuery '<span></span>'
-      buttonElement.hallodropdowntext
+      buttonElement.hallodropdownedit
         uuid: @options.uuid
         editable: @options.editable
-        label: 'fontsize'
-        default: '14'
+        label: 'columns'
+        default: '1'
         size: 2
         target: target
         targetOffset: {x:0, y:0}
         cssClass: @options.buttonCssClass
       buttonElement
 
+    _getCurrentCols: () ->
+      r = @widget.options.editable.getSelection()
+      c = getComputedStyle(r.startContainer.parentElement).getPropertyValue('column-count') ||
+          getComputedStyle(r.startContainer.parentElement).getPropertyValue('-moz-column-count') ||
+          getComputedStyle(r.startContainer.parentElement).getPropertyValue('-webkit-column-count') 
+      parseInt(c, 10) || 1
+
     _prepareQueryState: ->
       queryState = (event) =>
-        r = @widget.options.editable.getSelection()
-        size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2)
-        el = $('#' + @widget.options.uuid + '-fontsize').children().children()[0]
-        $(el).text(size)
+        size = @_getCurrentCols()
+        $('#' + @widget.options.uuid + '-columns input').val(size + ' col')
       events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
@@ -99,4 +93,3 @@
         @options.editable.element.off events, queryState
 
 )(jQuery)
-

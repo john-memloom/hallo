@@ -65,7 +65,8 @@
       queryState = (event) =>
         r = @widget.options.editable.getSelection()
         font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family')
-        $('#' + @widget.options.uuid + '-fonts span').text(font)
+        el = $('#' + @widget.options.uuid + '-fonts').children().children()[0]
+        $(el).text(font)
       events = 'keyup paste change hallomodified mouseup'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
@@ -84,26 +85,30 @@
           el.css('font-family', font)
         else
           rangy.createStyleApplier("font-family: #{font};", {normalize: true}).applyToRange(r)
-        $('#' + @widget.options.uuid + '-fonts span').text(name)
+        el = $('#' + @widget.options.uuid + '-fonts').children().children()[0]
+        $(el).text(name)
         @widget.options.editable.element.trigger('hallomodified')
 
       addFont = (font) =>
-        fntBtn = jQuery "<div class='font-item' style='font-family: #{font};'>#{font}</div>"
+        fntBtn = jQuery "<div class='font-item ui-text-only' style='font-family: #{font};'>#{font}</div>"
         fntBtn.on 'click', => 
           font = fntBtn.text()
           applyFont(font, font)
         fntBtn
 
       addCallback = (obj) =>
-        fntBtn = jQuery "<div class='font-item'><img src='#{obj.sampleIMG}'/></img></div>"
+        if (obj.sampleIMG)
+          fntBtn = jQuery "<div class='font-item ui-text-only'><img src='#{obj.sampleIMG}'/></img></div>"
+        else
+          fntBtn = jQuery "<div class='font-item ui-text-only' style='font-family: #{font};'>#{obj.fontName}</div>"
         fntBtn.on 'click', => 
           @widget.options.fontCallback(obj.family)
           applyFont(obj.family, obj.fontName)
         fntBtn
 
-      contentArea = jQuery "<div id='#{contentId}' class='font-list'></div>"
+      contentArea = jQuery "<div id='#{contentId}' class='font-list ui-droplist'></div>"
       for font in @options.fonts
-        console.log(font)
+        # console.log(font)
         if typeof font=='string'
           if font == '-'
             contentArea.append('<hr />')
@@ -116,7 +121,6 @@
             contentArea.append (addFont(font))
         else
           contentArea.append (addCallback(font))
-      console.log(contentArea.html())
       contentArea
 
     _prepareButton: (target) ->

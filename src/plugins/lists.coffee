@@ -7,28 +7,68 @@
       editable: null
       toolbar: null
       uuid: ''
+      buttonCssClass: null
+      style: null
       lists:
         ordered: true
         unordered: true
-      buttonCssClass: null
 
     populateToolbar: (toolbar) ->
+      
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      buttonize = (type, label) =>
-        buttonElement = jQuery '<span></span>'
-        buttonElement.hallobutton
-          uuid: @options.uuid
-          editable: @options.editable
-          label: label
-          command: "insert#{type}List"
-          icon: "icon-list-#{label.toLowerCase()}"
-          cssClass: @options.buttonCssClass
-        buttonset.append buttonElement
 
-      buttonize "Ordered", "OL" if @options.lists.ordered
-      buttonize "Unordered", "UL" if @options.lists.unordered
+      if @options.style=='droptoggle'
+        contentId = "#{@options.uuid}-#{@widgetName}-data"
+        target = @_makeDropdown contentId
+        buttonset.append target
+        buttonset.append @_makeToolbarButton target
+      else
+        for list, enabled of @options.lists
+          continue unless enabled
+          btn = @_makeActionBtn(list, enabled)
+          buttonset.append btn
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
 
+    _makeActionBtn: (list, enabled) ->
+      btn = jQuery '<span></span>'
+      img = icon = null
+      if (typeof enabled != 'boolean')
+        img = enabled
+      else
+        icon = "icon-list-#{list.toLowerCase()}"
+      btn.hallobutton
+          uuid: @options.uuid
+          editable: @options.editable
+          label: list
+          command: "insert#{list}List"
+          icon: icon
+          img: img
+          cssClass: @options.buttonCssClass
+
+      btn        
+
+    _makeDropdown: (contentId) ->
+      contentArea = jQuery "<div id='#{contentId}' class='lists-list ui-droplist'></div>"
+      for list, enabled of @options.lists
+        continue unless enabled
+        btn = @_makeActionBtn(list, enabled)
+        contentArea.append btn
+      contentArea
+
+    _makeToolbarButton: (target) ->
+      btn = jQuery '<span></span>'
+      btn.hallodropdownbutton
+        uuid: @options.uuid
+        editable: @options.editable
+        label: 'lists'
+        img: target.children(0).find('img').attr('src')
+        target: target
+        targetOffset: {x:0, y:0}
+        cssClass: @options.buttonCssClass
+      btn
+
+
 )(jQuery)
+

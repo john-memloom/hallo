@@ -1,0 +1,135 @@
+div.hallotoolbar {
+    border: 1px solid #8A877E;
+    padding: 2px;
+    background-color: #3D3835;
+    border-radius: 10px;
+    padding: 0 10px 0 10px;
+    font-size: 12pt;
+    line-height: 1.1em;
+    z-index: 500;
+    width: 500px;
+}
+
+.ui-button-flat {
+    background-color: inherit;
+    padding: 0;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+}
+
+.hallojustify.ui-buttonset,
+.linespace.ui-buttonset,
+.halloreundo.ui-buttonset
+{
+    padding-left: 5px;
+    border-left: 1px dotted white;
+    padding-top: 18px;
+}
+
+.ui-button-flat.ui-state-active {
+    background-color: inherit;
+    background-image: none;
+}
+
+.ui-drop-down-button {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.ui-droplist {
+    width: 50px;
+    background-color: #3D3835;
+    border: 1px solid #8A877E;
+    border-radius: 6px;
+    padding: 0;
+    color: #D9D4C9;
+}
+
+.ui-droplist .ui-button-flat {
+    padding-left: 15px;
+    padding-right: 5px;
+}
+
+.ui-droplist .ui-text-only:hover,
+.ui-droplist .ui-button-flat:hover {
+    background-color: #4E7AA5;
+}
+
+.ui-button-flat img {
+    width: 30px;
+    height: 30px;
+}
+
+.ui-droplist .ui-text-only {
+    width: inherit;
+    text-align: center;
+    padding: 5px 0 5px 0;
+}
+
+.ui-button-text-only.ui-button-flat {
+    color: #D9D4C9;
+    font-size: 14px;
+}
+
+.halloButtonrow {
+    border-top: solid 1px #8A877E;
+    padding: 10px 0 5px 0;
+}
+
+.halloButtonrow:nth-of-type(1) {
+    border: none;
+}
+
+.font-list {
+    width: 120px;
+    padding-left: 10px;
+}
+
+.font-list .ui-text-only {
+    text-align: left;
+}
+
+.font-color-picker{
+
+    width: 200px;
+    padding: 10px 10px 10px 10px;
+
+    background-color: #3D3835;
+    border: 1px solid #8A877E;
+    border-radius: 6px;
+
+}
+
+.font-color-button{
+    width: 20px;
+    height: 20px;
+    border-color: #8A877E;
+    border-radius: 3px;
+    background-color: #6e939d;
+    float: left;
+    margin: 4px;
+}
+
+.font-color-block{
+    width: 10px;
+    height: 10px;
+    margin: 3px 3px 3px 3px;
+    float: left;
+    cursor: pointer;
+    border: solid 2px; 
+}
+
+.font-color-block:hover{
+    border: solid white 2px !important;
+}
+
+
+
+
+
+
+
+
+
+

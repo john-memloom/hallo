@@ -30,6 +30,7 @@
 
     populateToolbar: (toolbar) ->
       @widget = this
+      @options.toolbar = toolbar
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
       contentId = "#{@options.uuid}-#{@widgetName}-data"
       target = @_prepareDropdown contentId
@@ -37,12 +38,13 @@
       buttonset.hallobuttonset()
       buttonset.append target
       buttonset.append @_prepareButton target
+      @_prepareQueryState()
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-color-picker'></div>"
       addColor = (color) => 
         colorBlock = jQuery "<div class='font-color-block' style='background-color: \##{color}; border-color: \##{color}'></div>"
-        colorBlock.on "click", =>
+        colorBlock.on "click", (evt) =>
           color = colorBlock.css('background-color')
           el = @widget.options.editable.element
           r = @widget.options.editable.getSelection()
@@ -52,6 +54,7 @@
             el.css('color', color)
           else
             rangy.createStyleApplier("color: #{color};", {normalize: true}).applyToRange(r)
+          $(evt.target).closest('.fontcolor').find('.font-color-button').css('background-color', color)
           @widget.options.editable.element.trigger('hallomodified')
       for sectionName in ['grays', 'brights', 'shades']
         section = jQuery "<div class='font-color-selection' style='height: #{(@options[sectionName].length/10)*17}px;'></div>"
@@ -62,14 +65,26 @@
 
     _prepareButton: (target) ->
       buttonElement = jQuery '<span></span>'
+      buttonGlyph = '<div class="font-color-button">&nbsp;</div>'
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
         label: 'fontcolors'
-        img: 'colors.gif'
+        html: buttonGlyph
         target: target
         targetOffset: {x:0, y:0}
         cssClass: @options.buttonCssClass
       buttonElement
 
+    _prepareQueryState: ->
+      queryState = (event) =>
+        r = @widget.options.editable.getSelection()
+        color = getComputedStyle(r.startContainer.parentElement).getPropertyValue('color')
+        @widget.options.toolbar.find('.font-color-button').css('background-color', color)
+      events = 'keyup paste change hallomodified mouseup'
+      @options.editable.element.on events, queryState
+      @options.editable.element.on 'halloenabled', =>
+        @options.editable.element.on events, queryState
+      @options.editable.element.on 'hallodisabled', =>
+        @options.editable.element.off events, queryState
 )(jQuery)

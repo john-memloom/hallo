@@ -8,23 +8,36 @@
       toolbar: null
       uuid: ''
       buttonCssClass: null
+      undoImg: null
+      redoImg: null
 
     populateToolbar: (toolbar) ->
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      buttonize = (cmd, label) =>
+      buttonize = (cmd) =>
         buttonElement = jQuery '<span></span>'
+        icon = null
+        img = if cmd is 'undo' then @options.redoImg else @options.undoImg
+        unless img
+          icon = if cmd is 'undo' then 'icon-undo' else 'icon-repeat'
         buttonElement.hallobutton
-          uuid: @options.uuid
+          uuid: @options.uuid + cmd
           editable: @options.editable
-          label: label
-          icon: if cmd is 'undo' then 'icon-undo' else 'icon-repeat'
+          label: cmd
+          icon: icon
+          img: img
           command: cmd
           queryState: false
           cssClass: @options.buttonCssClass
         buttonset.append buttonElement
-      buttonize "undo", "Undo"
-      buttonize "redo", "Redo"
 
+      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
+      buttonize "undo"
       buttonset.hallobuttonset()
       toolbar.append buttonset
+
+      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
+      buttonize "redo"
+      buttonset.hallobuttonset()
+      toolbar.append buttonset
+
 )(jQuery)

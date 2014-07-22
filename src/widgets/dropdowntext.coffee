@@ -62,19 +62,33 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      classes = [
-        'ui-button'
-        'ui-widget'
-        'ui-state-default'
-        'ui-corner-all'
-        'ui-button-text-only'
-      ]
+      if (@options.cssClass=='flat')
+        classes = [
+          'ui-button-flat'
+          'ui-widget'
+          'ui-button-text-only'
+        ]
+        dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
+        textHtml = "<div style='float: left; margin-top: 6px;'>#{@options.default}&nbsp;</div>"
+      else
+        classes = [
+          'ui-button'
+          'ui-widget'
+          'ui-state-default'
+          'ui-corner-all'
+          'ui-button-text-only'
+        ] 
+        dropglyph = "<i class='icon-caret-down' style='float: right;'></i>"
+        textHtml = "<span>#{@options.default}&nbsp;</span>"
+
       buttonEl = jQuery "<button id='#{id}'
        class='#{classes.join(' ')}' title='#{@options.label}'>
        <div style='width: #{@options.width}px;'>
-       <span>#{@options.default}&nbsp;</span><i class='icon-caret-down' style='float: right;'></i></div>
+       #{textHtml}
+       #{dropglyph}</div>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl
 
 )(jQuery)
+

@@ -25,11 +25,11 @@
       buttonset.append target
       buttonset.append @_prepareButton target
       # put the increment buttons in their own buttonset      
-      buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      toolbar.append buttonset
-      buttonset.hallobuttonset()
-      buttonset.append @_makeSizerButton("up")
-      buttonset.append @_makeSizerButton("down")
+      # buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
+      # toolbar.append buttonset
+      # buttonset.hallobuttonset()
+      # buttonset.append @_makeSizerButton("up")
+      # buttonset.append @_makeSizerButton("down")
       @_prepareQueryState()
 
     _makeSizerButton: (direction) ->
@@ -67,12 +67,11 @@
       @widget.options.editable.element.trigger('hallomodified')
       
     _prepareDropdown: (contentId) ->
-      contentArea = jQuery "<div id='#{contentId}' class='font-size-list'></div>"
+      contentArea = jQuery "<div id='#{contentId}' class='linespace-list ui-droplist'></div>"
       currentFont = @options.editable.element.get(0).tagName.toLowerCase()
       addSize = (size) =>
-        el = jQuery "<div class='font-size-item'>#{size}x</div>"
+        el = jQuery "<div class='linespace-item ui-text-only'>#{size}</div>"
         el.on 'click', =>
-          size = el.text().trim().slice(0,-1) 
           @widget.setSize(size)
         el
       for size in @options.sizes
@@ -81,12 +80,14 @@
 
     _prepareButton: (target) ->
       buttonElement = jQuery '<span></span>'
-      buttonElement.hallodropdownedit
+      icon = null
+      icon = "icon-text-height" unless @options.img
+      buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
         label: 'linespace'
-        default: '1x'
-        size: 2
+        icon: icon
+        img: @options.img
         target: target
         targetOffset: {x:0, y:0}
         cssClass: @options.buttonCssClass

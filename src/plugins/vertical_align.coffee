@@ -11,27 +11,69 @@
       toolbar: null
       uuid: ''
       buttonCssClass: null
+      style: null
+      alignments:
+        top: true
+        middle: true
+        bottom: true
 
     populateToolbar: (toolbar) ->
+      
       buttonset = jQuery "<span class=\"#{@widgetName}\"></span>"
-      makeButton = (alignment) =>
-        btn = jQuery '<span></span>'
-        btn.hallobutton
-          uuid: @options.uuid
-          editable: @options.editable
-          label: alignment
-          icon: "icon-question-sign"
-          cssClass: @options.buttonCssClass
-        buttonset.append btn
-        btn.on "click", (evt) =>
-          @verticallyAlign(evt, alignment, @options.editable.element)
-          @options.editable.element.trigger('hallomodified')
+
+      if @options.style=='droplist'
+        contentId = "#{@options.uuid}-#{@widgetName}-data"
+        target = @_makeDropdown contentId
+        buttonset.append target
+        buttonset.append @_makeToolbarButton target
+      else
+        for alignment, enabled of @options.alignments
+          continue unless enabled
+          btn = @_makeActionBtn(alignment, enabled)
+          buttonset.append btn
 
       buttonset.hallobuttonset()
-      makeButton "Top"
-      makeButton "Middle"
-      makeButton "Bottom"
       toolbar.append buttonset
+
+    _makeActionBtn: (alignment, enabled) ->
+      btn = jQuery '<span></span>'
+      img = icon = null
+      if (typeof enabled != 'boolean')
+        img = enabled
+      else
+        icon = "icon-align-#{alignment}"
+        icon = "icon-align-justify" if alignment == 'Full'
+      btn.hallobutton
+        uuid: @options.uuid
+        editable: @options.editable
+        label: alignment
+        icon: icon
+        img: img
+        cssClass: @options.buttonCssClass
+      btn.on "click", (evt) =>
+        @verticallyAlign(evt, alignment, @options.editable.element)
+        @options.editable.element.trigger('hallomodified')
+      btn        
+
+    _makeDropdown: (contentId) ->
+      contentArea = jQuery "<div id='#{contentId}' class='valign-list ui-droplist'></div>"
+      for alignment, enabled of @options.alignments
+        continue unless enabled
+        btn = @_makeActionBtn(alignment, enabled)
+        contentArea.append btn
+      contentArea
+
+    _makeToolbarButton: (target) ->
+      btn = jQuery '<span></span>'
+      btn.hallodropdownbutton
+        uuid: @options.uuid
+        editable: @options.editable
+        label: 'vertical_align'
+        img: target.children(0).find('img').attr('src')
+        target: target
+        targetOffset: {x:0, y:0}
+        cssClass: @options.buttonCssClass
+      btn
 
     verticallyAlign: (evt, alignment, el) ->
       alreadyWrapped = $(el).css('display') == 'table'
@@ -42,5 +84,4 @@
         $(el).css('display', 'table')
       $(el).children().css('vertical-align', alignment.toLowerCase())
 
-
-)(jQuery)      	
+)(jQuery)

@@ -10,6 +10,8 @@
       uuid: ''
       label: null
       icon: null
+      img: null
+      html: null
       editable: null
       command: null
       commandValue: null
@@ -20,17 +22,20 @@
       # By default the icon is icon-command, but this doesn't
       # always match with
       # <http://fortawesome.github.com/Font-Awesome/#base-icons>
-      @options.icon ?= "icon-#{@options.label.toLowerCase()}"
+      if @options.img == null && @options.html == null
+        @options.icon ?= "icon-#{@options.label.toLowerCase()}" 
 
       id = "#{@options.uuid}-#{@options.label}"
       opts = @options
-      @button = @_createButton id, opts.command, opts.label, opts.icon
+      @button = @_createButton id, opts.command, opts.label, opts.icon, opts.img, opts.html, opts.cssClass == 'flat'
       @element.append @button
-      @button.addClass @options.cssClass if @options.cssClass
+      @button.addClass @options.cssClass if @options.cssClass unless @options.cssClass=='flat'
       @button.addClass 'btn-large' if @options.editable.options.touchScreen
       @button.data 'hallo-command', @options.command
       if @options.commandValue
         @button.data 'hallo-command-value', @options.commandValue
+      if @options.img != null
+        @button.img = @options.img if (typeof @options.img == 'object')
         
       hoverclass = 'ui-state-hover'
       @button.on 'mouseenter', (event) =>
@@ -90,29 +95,50 @@
     refresh: ->
       if @isChecked
         @button.addClass 'ui-state-active'
+        if @button.img
+          @button.find('img').attr('src', @button.img[1])
       else
         @button.removeClass 'ui-state-active'
+        if @button.img
+          @button.find('img').attr('src', @button.img[0])
 
     checked: (checked) ->
       @isChecked = checked
       @refresh()
 
-    _createButton: (id, command, label, icon) ->
-      classes = [
-        'ui-button'
-        'ui-widget'
-        'ui-state-default'
-        'ui-corner-all'
-        'ui-button-text-only'
-        "#{command}_button"
-      ]
+    _createButton: (id, command, label, icon, img, html, flat) ->
+      if (flat)
+        classes = [
+          'ui-button-flat'
+          'ui-widget'
+          'ui-button-text-only'
+          "#{command}_button"
+        ]
+      else
+        classes = [
+          'ui-button'
+          'ui-widget'
+          'ui-state-default'
+          'ui-corner-all'
+          'ui-button-text-only'
+          "#{command}_button"
+        ]
+      if (icon!=null)
+        glyph = "<i class=\"#{icon}\"></i>"
+      else if (html != null)
+        glyph = html
+      else
+        if typeof img == 'string'
+          glyph = "<img src=\"#{img}\"></img>"
+        else
+          glyph = "<img src=\"#{img[0]}\"></img>"
+
       jQuery "<button id=\"#{id}\"
         class=\"#{classes.join(' ')}\" title=\"#{label}\">
           <span class=\"ui-button-text\">
-            <i class=\"#{icon}\"></i>
+            #{glyph}
           </span>
         </button>"
-
 
   jQuery.widget 'IKS.hallobuttonset',
     buttons: null

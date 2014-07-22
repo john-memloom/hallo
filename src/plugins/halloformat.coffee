@@ -17,19 +17,26 @@
       widget = this
       buttonset = jQuery "<span class=\"#{widget.widgetName}\"></span>"
 
-      buttonize = (format) =>
+      buttonize = (format, enabled) =>
         buttonHolder = jQuery '<span></span>'
+        img = icon = null
+        if (typeof enabled != 'boolean')
+          img = enabled
+        else  
+          icon = format
         buttonHolder.hallobutton
           label: format
           editable: @options.editable
           command: format
+          icon: icon
+          img: img
           uuid: @options.uuid
           cssClass: @options.buttonCssClass
         buttonset.append buttonHolder
 
       for format, enabled of @options.formattings
         continue unless enabled
-        buttonize format
+        buttonize format, enabled
 
       buttonset.hallobuttonset()
       toolbar.append buttonset
