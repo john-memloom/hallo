@@ -19,6 +19,7 @@
       cssClass: null
       default: null
       size: 10
+      change: null
 
     _init: ->
       target = jQuery @options.target
@@ -42,13 +43,29 @@
 
       @element.append @button
 
+    _activateEditField: (active) ->
+      console.log('activatefield', active)
+      id = "#{@options.uuid}-#{@options.label}"
+      inp = $('#' + id + ' input')
+      inp.attr('readonly', if active==true then null else true)
+      if (active)
+        @options.editable.cachedSelection = @options.editable.getSelection()
+        @options.editable.keepActivated true
+        inp.focus()
+      else
+        @options.editable.keepActivated false
+        @options.editable.element.focus()
+        @options.editable.restoreSelection(@options.editable.cachedSelection)
+
     _showTarget: ->
+      @_activateEditField(true)
       target = jQuery @options.target
       @_updateTargetPosition()
       target.addClass 'open'
       target.show()
     
     _hideTarget: ->
+      @_activateEditField(false)
       target = jQuery @options.target
       target.removeClass 'open'
       target.hide()
@@ -62,18 +79,45 @@
 
     _prepareButton: ->
       id = "#{@options.uuid}-#{@options.label}"
-      classes = [
-        'ui-button'
-        'ui-widget'
-        'ui-state-default'
-        'ui-corner-all'
-        'ui-button-text-only'
-      ]
+      if (@options.cssClass=='flat')
+        classes = [
+          'ui-button-flat'
+          'ui-widget'
+          'ui-button-text-only'
+        ]
+        dropglyph = @options.editable.options.dropglyph
+        if (dropglyph)
+          dropglyph =  "<img src='#{dropglyph}' class='ui-drop-down-button'></img>"
+        else
+          dropglyph =  "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
+      else
+        classes = [
+          'ui-button'
+          'ui-widget'
+          'ui-state-default'
+          'ui-corner-all'
+          'ui-button-text-only'
+        ] 
+        dropglyph = "<i class='icon-caret-down' style='float: right;'></i>"
       buttonEl = jQuery "<button id=\"#{id}\"
-       class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
-       <span class=\"ui-button-text\"><input type='text' size='#{@options.size}' value='#{@options.default}'></input>&nbsp;<i class=\"icon-caret-down\"></i></span>
+       class=\"#{classes.join(' ')}\" title=\"#{@options.label.replace(/_/g, ' ')}\">
+       <div style='float: left;'>
+       <input readonly type='text' size='#{@options.size}' value='#{@options.default}'></input>&nbsp;
+       </div>
+       #{dropglyph}
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
+      if @options.change
+        setTimeout =>
+          inp = $('#' + id + ' input')
+          inp.on 'change', =>
+            inp = $('#' + id + ' input')
+            @options.change inp.val(), @options.editable
+            @_hideTarget()
+        , 300
+
+
+
       buttonEl
 
 )(jQuery)

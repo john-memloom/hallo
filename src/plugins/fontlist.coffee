@@ -66,7 +66,13 @@
         r = @widget.options.editable.getSelection()
         font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family')
         el = $('#' + @widget.options.uuid + '-fonts').children().children()[0]
-        $(el).text(font)
+        if (@widget.fontNames)
+          font = font.split(',')[0].trim()
+          name = @widget.fontNames[font]
+          name = font unless name
+        else
+          name = font
+        $(el).text(name)
       events = 'keyup paste change hallomodified mouseup'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
@@ -81,7 +87,7 @@
         r = @widget.options.editable.getSelection()
         allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
         if (allOrNothing)              
-          el.children().css('font-family', '')
+          el.find('*').css('font-family', '')
           el.css('font-family', font)
         else
           rangy.createStyleApplier("font-family: #{font};", {normalize: true}).applyToRange(r)
@@ -107,6 +113,7 @@
         fntBtn
 
       contentArea = jQuery "<div id='#{contentId}' class='font-list ui-droplist'></div>"
+      @widget.fontNames = {}
       for font in @options.fonts
         # console.log(font)
         if typeof font=='string'
@@ -121,6 +128,7 @@
             contentArea.append (addFont(font))
         else
           contentArea.append (addCallback(font))
+          @widget.fontNames[font.family] = font.fontName
       contentArea
 
     _prepareButton: (target) ->
@@ -132,7 +140,7 @@
         default: 'Times'
         target: target
         targetOffset: {x:0, y:0}
-        width: 100
+        width: 160
         cssClass: @options.buttonCssClass
       buttonElement
 

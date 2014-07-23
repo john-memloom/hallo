@@ -81,7 +81,7 @@
             
           _applySz = () ->
             if (allOrNothing)              
-              el.children().css('font-size', '')
+              el.find('*').css('font-size', '')
               el.css('font-size', "#{sz}px")
             else
               rangy.createStyleApplier("font-size: #{sz}px;", {normalize: true}).applyToRange(r)

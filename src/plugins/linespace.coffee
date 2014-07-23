@@ -59,11 +59,11 @@
       else
         lh = (parseFloat(size) * 120) + '%'
       if (allOrNothing)              
-        el.children().css('line-height', '')
+        el.find('*').css('line-height', '')
         el.css('line-height', lh)
       else
         rangy.createStyleApplier("line-height: #{lh};", {normalize: true}).applyToRange(r)
-      $('#' + @widget.options.uuid + '-linespace input').val(size+"x")
+      $('#' + @widget.options.uuid + '-line_space input').val(size+"x")
       @widget.options.editable.element.trigger('hallomodified')
       
     _prepareDropdown: (contentId) ->
@@ -85,7 +85,7 @@
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
-        label: 'linespace'
+        label: 'line_space'
         icon: icon
         img: @options.img
         target: target

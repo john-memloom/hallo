@@ -68,7 +68,11 @@
           'ui-widget'
           'ui-button-text-only'
         ]
-        dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
+        dropglyph = @options.editable.options.dropglyph
+        if (dropglyph)
+          dropglyph =  "<img src='#{dropglyph}' class='ui-drop-down-button'></img>"
+        else
+          dropglyph =  "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
         textHtml = "<div style='float: left; margin-top: 6px;'>#{@options.default}&nbsp;</div>"
       else
         classes = [
@@ -82,10 +86,11 @@
         textHtml = "<span>#{@options.default}&nbsp;</span>"
 
       buttonEl = jQuery "<button id='#{id}'
-       class='#{classes.join(' ')}' title='#{@options.label}'>
+       class='#{classes.join(' ')}' title='#{@options.label.replace(/_/g, ' ')}'>
        <div style='width: #{@options.width}px;'>
        #{textHtml}
-       #{dropglyph}</div>
+       #{dropglyph}
+       </div>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl

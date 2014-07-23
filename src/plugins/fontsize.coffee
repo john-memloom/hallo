@@ -41,7 +41,7 @@
         icon: if direction=="up" then 'icon-caret-up' else 'icon-caret-down'
         label: if direction=="up" then 'increase font size' else 'decrease font size'
       btn.on "click", =>
-        currentSize = $('#' + @widget.options.uuid + '-fontsize input').val().slice(0,-2)
+        currentSize = $('#' + @widget.options.uuid + '-font_size input').val().slice(0,-2)
         if (direction=="up")
           size = parseInt(currentSize,10) + 1 
         else
@@ -49,18 +49,17 @@
           size = 0 if (size < 0)
         @widget.setSize(size)
 
-    setSize: (size) ->
-      el = @widget.options.editable.element
-      r = @widget.options.editable.getSelection()
+    setSize: (size, editable) ->
+      editable ||= @widget.options.editable
+      el = editable.element
+      r = editable.cachedSelection
       allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
       if (allOrNothing)              
-        el.children().css('font-size', '')
+        el.find('*').css('font-size', '')
         el.css('font-size', size + 'px')
       else
         rangy.createStyleApplier("font-size: #{size}px;", {normalize: true}).applyToRange(r)
-      el = $('#' + @widget.options.uuid + '-fontsize').children().children()[0]
-      $(el).text(size)
-      @widget.options.editable.element.trigger('hallomodified')
+      editable.element.trigger('hallomodified')
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-size-list ui-droplist'></div>"
@@ -74,12 +73,13 @@
 
     _prepareButton: (target) ->
       buttonElement = jQuery '<span></span>'
-      buttonElement.hallodropdowntext
+      buttonElement.hallodropdownedit
         uuid: @options.uuid
         editable: @options.editable
-        label: 'fontsize'
+        label: 'font_size'
         default: '14'
-        size: 2
+        size: 3
+        change: @widget.setSize
         target: target
         targetOffset: {x:0, y:0}
         cssClass: @options.buttonCssClass
@@ -87,10 +87,14 @@
 
     _prepareQueryState: ->
       queryState = (event) =>
-        r = @widget.options.editable.getSelection()
-        size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2)
-        el = $('#' + @widget.options.uuid + '-fontsize').children().children()[0]
-        $(el).text(size)
+        # @widget.options.editable.element.focus()
+        setTimeout =>
+          console.log('query state', event)
+          r = @widget.options.editable.getSelection()
+          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2)
+          el = $('#' + @widget.options.uuid + '-font_size input')[0]
+          $(el).val(size)
+        , 300
       events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>

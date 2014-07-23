@@ -25,7 +25,7 @@
       insertHR.hallobutton
         uuid: @options.uuid
         editable: @options.editable
-        label: "insertHR"
+        label: "insert_horizontal_rule"
         icon: icon
         img: img
         cssClass: @options.buttonCssClass

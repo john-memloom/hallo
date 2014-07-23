@@ -73,6 +73,11 @@
           'ui-widget'
           'ui-button-text-only'
         ]
+        dropglyph = @options.editable.options.dropglyph
+        if (dropglyph)
+          dropglyph =  "<img src='#{dropglyph}' class='ui-drop-down-button'></img>"
+        else
+          dropglyph =  "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
       else
         classes = [
           'ui-button'
@@ -81,6 +86,7 @@
           'ui-corner-all'
           'ui-button-text-only'
         ]
+        dropglyph = "<i class='icon-caret-down' style='float: right;'></i>"
 
       if (@options.icon != null)
         glyph = "<i class=\"#{@options.icon}\"></i>" if @options.icon
@@ -89,10 +95,9 @@
       else
         glyph = "<img src='#{@options.img}'></img>" if @options.img
 
-      dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
 
       buttonEl = jQuery "<button id=\"#{id}\"
-       class=\"#{classes.join(' ')}\" title=\"#{@options.label}\">
+       class=\"#{classes.join(' ')}\" title=\"#{@options.label.replace(/_/g, ' ')}\">
        <span class=\"ui-button-text\">#{glyph}#{dropglyph}</span>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass

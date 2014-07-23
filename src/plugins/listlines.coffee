@@ -38,6 +38,15 @@
           @btns[lineStyle] = btn
       buttonset.hallobuttonset()
       toolbar.append buttonset
+      # set initial style
+      bgImage = @options.editable.element.css('background-image')
+      # if (bgImage.indexOf('linear-gradient(to bottom')==0)
+      if (bgImage == "linear-gradient(black 2px, transparent 2px)")
+        @currentStyle = 'solid'
+      else if (bgImage.indexOf('linear-gradient(to bottom')>0)
+        @currentStyle = 'dotted'
+      else
+        @currentStyle = 'none'
 
     _makeDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='listlines-list ui-droplist'></div>"
@@ -70,7 +79,7 @@
       btn.hallobutton
           uuid: @options.uuid
           editable: @options.editable
-          label: lineStyle
+          label: lineStyle+'_ruled_lines'
           icon: icon
           img: img
           queryState: () => 
@@ -104,7 +113,8 @@
       else
         size = parseFloat(size.slice(0,-2))
       if (lineStyle == 'solid')
-        bgImage = "linear-gradient(to bottom,transparent #{size-2}px, black #{size-2}px, black 100%)"
+        # bgImage = "linear-gradient(to bottom,transparent #{size-2}px, black #{size-2}px, black 100%)"
+        bgImage = "linear-gradient(black 2px, transparent 2px)"
       else
         bgcolor = getComputedStyle(editable.element[0]).backgroundColor
         bgImage = "linear-gradient(to right, #{bgcolor} 50%, transparent 51%,transparent 100%),linear-gradient(to bottom,transparent #{size-2}px, black #{size-2}px, black 100%)"

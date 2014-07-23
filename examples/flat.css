@@ -7,7 +7,7 @@ div.hallotoolbar {
     font-size: 12pt;
     line-height: 1.1em;
     z-index: 500;
-    width: 500px;
+    width: 355px;
 }
 
 .ui-button-flat {
@@ -35,6 +35,7 @@ div.hallotoolbar {
 .ui-drop-down-button {
     margin-left: -10px;
     margin-right: -10px;
+    float: right;
 }
 
 .ui-droplist {
@@ -122,6 +123,12 @@ div.hallotoolbar {
 
 .font-color-block:hover{
     border: solid white 2px !important;
+}
+
+.fontsize input:read-only{
+    background-color: #3D3835;
+    border: none;
+    color: #D9D4C9;
 }
 
 

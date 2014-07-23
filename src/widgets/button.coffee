@@ -134,7 +134,7 @@
           glyph = "<img src=\"#{img[0]}\"></img>"
 
       jQuery "<button id=\"#{id}\"
-        class=\"#{classes.join(' ')}\" title=\"#{label}\">
+        class=\"#{classes.join(' ')}\" title=\"#{label.replace(/_/g, ' ')}\">
           <span class=\"ui-button-text\">
             #{glyph}
           </span>

@@ -38,10 +38,14 @@
         img = enabled
       else
         icon = "icon-list-#{list.toLowerCase()}"
+      if list=='ordered'
+        lbl = 'numbered_list'
+      else if list=='unordered'
+        lbl = 'bullet_points'
       btn.hallobutton
           uuid: @options.uuid
           editable: @options.editable
-          label: list
+          label: lbl
           command: "insert#{list}List"
           icon: icon
           img: img

@@ -41,6 +41,7 @@
           toolbar: 'halloToolbarFixed',
           parentElement: '#text_editor_toolbar',
           buttonCssClass: 'flat',
+          dropglyph: 'svg-icons/textedit_dropdown.svg',
           plugins: {
 
             halloformat: { 
@@ -82,12 +83,12 @@
               sizes: [0.5,1,1.5,2,2.5]
             },
 
-            listlines: {
-              lineStyles: {
-                solid:  ['svg-icons/textedit_listlines_lined_off.svg','svg-icons/textedit_listlines_lined_on.svg'],
-                dotted: ['svg-icons/textedit_listlines_dotted_off.svg','svg-icons/textedit_listlines_dotted_on.svg']
-              }
-            },
+            // listlines: {
+            //   lineStyles: {
+            //     solid:  ['svg-icons/textedit_listlines_lined_off.svg','svg-icons/textedit_listlines_lined_on.svg'],
+            //     dotted: ['svg-icons/textedit_listlines_dotted_off.svg','svg-icons/textedit_listlines_dotted_on.svg']
+            //   }
+            // },
 
             horizontalrule: {
               img: 'svg-icons/textedit_insert_HR.svg'
@@ -95,13 +96,13 @@
 
             fontlist: {
               fonts: [
-                {family: 'museo-sans', fontName: 'Museo Sans'},
-                {family: 'museo-sans', fontName: 'Museo Slab'},
-                {family: 'museo-sans', fontName: 'Bree'},
-                {family: 'museo-sans', fontName: 'Grafolita'},
-                {family: 'museo-sans', fontName: 'Droid Serif'},
-                {family: 'museo-sans', fontName: 'Kepler'},
-                {family: 'museo-sans', fontName: 'Grandma'},
+                {family: 'dummy1', fontName: 'Museo Sans'},
+                {family: 'dummy2', fontName: 'Museo Slab'},
+                {family: 'dummy3', fontName: 'Bree'},
+                {family: 'dummy4', fontName: 'Grafolita'},
+                {family: 'dummy5', fontName: 'Droid Serif'},
+                {family: 'dummy6', fontName: 'Kepler'},
+                {family: 'dummy7', fontName: 'Grandma'},
               ],
               fontCallback: loadTypekitFont 
             },
@@ -112,10 +113,10 @@
             
             fontcolor: {},
 
-            halloreundo: {
-              undoImg: 'svg-icons/textedit_undo.svg',
-              redoImg: 'svg-icons/textedit_redo.svg'
-            },
+            // halloreundo: {
+            //   undoImg: 'svg-icons/textedit_undo.svg',
+            //   redoImg: 'svg-icons/textedit_redo.svg'
+            // },
 
             // organizational plugins
             hallotoolbarlinebreak: { breakAfter: ['horizontalrule'] },

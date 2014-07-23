@@ -50,8 +50,12 @@
           r = @widget.options.editable.getSelection()
           allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
           if (allOrNothing)              
-            el.children().css('color', '')
-            el.css('color', color)
+            # set color on all child elemnts rather than just the parent so as to make it
+            # more persistent...
+            el.find('*').css('color', color)
+            # this is the old way of doing it - clear the color on all children and add it to the parent
+            # el.find('*').css('color', '')
+            # el.css('color', color)
           else
             rangy.createStyleApplier("color: #{color};", {normalize: true}).applyToRange(r)
           $(evt.target).closest('.fontcolor').find('.font-color-button').css('background-color', color)
@@ -69,7 +73,7 @@
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
-        label: 'fontcolors'
+        label: 'font_colors'
         html: buttonGlyph
         target: target
         targetOffset: {x:0, y:0}

@@ -983,8 +983,7 @@
             r = _this.widget.options.editable.getSelection();
             allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
             if (allOrNothing) {
-              el.children().css('color', '');
-              el.css('color', color);
+              el.find('*').css('color', color);
             } else {
               rangy.createStyleApplier("color: " + color + ";", {
                 normalize: true
@@ -1014,7 +1013,7 @@
         buttonElement.hallodropdownbutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'fontcolors',
+          label: 'font_colors',
           html: buttonGlyph,
           target: target,
           targetOffset: {
@@ -1074,11 +1073,20 @@
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          var el, font, r;
+          var el, font, name, r;
           r = _this.widget.options.editable.getSelection();
           font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family');
           el = $('#' + _this.widget.options.uuid + '-fonts').children().children()[0];
-          return $(el).text(font);
+          if (_this.widget.fontNames) {
+            font = font.split(',')[0].trim();
+            name = _this.widget.fontNames[font];
+            if (!name) {
+              name = font;
+            }
+          } else {
+            name = font;
+          }
+          return $(el).text(name);
         };
         events = 'keyup paste change hallomodified mouseup';
         this.options.editable.element.on(events, queryState);
@@ -1098,7 +1106,7 @@
           r = _this.widget.options.editable.getSelection();
           allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
           if (allOrNothing) {
-            el.children().css('font-family', '');
+            el.find('*').css('font-family', '');
             el.css('font-family', font);
           } else {
             rangy.createStyleApplier("font-family: " + font + ";", {
@@ -1132,6 +1140,7 @@
           return fntBtn;
         };
         contentArea = jQuery("<div id='" + contentId + "' class='font-list ui-droplist'></div>");
+        this.widget.fontNames = {};
         _ref = this.options.fonts;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           font = _ref[_i];
@@ -1148,6 +1157,7 @@
             }
           } else {
             contentArea.append(addCallback(font));
+            this.widget.fontNames[font.family] = font.fontName;
           }
         }
         return contentArea;
@@ -1165,7 +1175,7 @@
             x: 0,
             y: 0
           },
-          width: 100,
+          width: 160,
           cssClass: this.options.buttonCssClass
         });
         return buttonElement;
@@ -1209,7 +1219,7 @@
         });
         return btn.on("click", function() {
           var currentSize, size;
-          currentSize = $('#' + _this.widget.options.uuid + '-fontsize input').val().slice(0, -2);
+          currentSize = $('#' + _this.widget.options.uuid + '-font_size input').val().slice(0, -2);
           if (direction === "up") {
             size = parseInt(currentSize, 10) + 1;
           } else {
@@ -1221,22 +1231,21 @@
           return _this.widget.setSize(size);
         });
       },
-      setSize: function(size) {
+      setSize: function(size, editable) {
         var allOrNothing, el, r;
-        el = this.widget.options.editable.element;
-        r = this.widget.options.editable.getSelection();
+        editable || (editable = this.widget.options.editable);
+        el = editable.element;
+        r = editable.cachedSelection;
         allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
         if (allOrNothing) {
-          el.children().css('font-size', '');
+          el.find('*').css('font-size', '');
           el.css('font-size', size + 'px');
         } else {
           rangy.createStyleApplier("font-size: " + size + "px;", {
             normalize: true
           }).applyToRange(r);
         }
-        el = $('#' + this.widget.options.uuid + '-fontsize').children().children()[0];
-        $(el).text(size);
-        return this.widget.options.editable.element.trigger('hallomodified');
+        return editable.element.trigger('hallomodified');
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, size, _i, _len, _ref,
@@ -1259,12 +1268,13 @@
       _prepareButton: function(target) {
         var buttonElement;
         buttonElement = jQuery('<span></span>');
-        buttonElement.hallodropdowntext({
+        buttonElement.hallodropdownedit({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'fontsize',
+          label: 'font_size',
           "default": '14',
-          size: 2,
+          size: 3,
+          change: this.widget.setSize,
           target: target,
           targetOffset: {
             x: 0,
@@ -1278,11 +1288,14 @@
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          var el, r, size;
-          r = _this.widget.options.editable.getSelection();
-          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2);
-          el = $('#' + _this.widget.options.uuid + '-fontsize').children().children()[0];
-          return $(el).text(size);
+          return setTimeout(function() {
+            var el, r, size;
+            console.log('query state', event);
+            r = _this.widget.options.editable.getSelection();
+            size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2);
+            el = $('#' + _this.widget.options.uuid + '-font_size input')[0];
+            return $(el).val(size);
+          }, 300);
         };
         events = 'keyup paste change mouseup hallomodified';
         this.options.editable.element.on(events, queryState);
@@ -1443,7 +1456,7 @@
         insertHR.hallobutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: "insertHR",
+          label: "insert_horizontal_rule",
           icon: icon,
           img: img,
           cssClass: this.options.buttonCssClass,
@@ -2990,14 +3003,14 @@
           lh = (parseFloat(size) * 120) + '%';
         }
         if (allOrNothing) {
-          el.children().css('line-height', '');
+          el.find('*').css('line-height', '');
           el.css('line-height', lh);
         } else {
           rangy.createStyleApplier("line-height: " + lh + ";", {
             normalize: true
           }).applyToRange(r);
         }
-        $('#' + this.widget.options.uuid + '-linespace input').val(size + "x");
+        $('#' + this.widget.options.uuid + '-line_space input').val(size + "x");
         return this.widget.options.editable.element.trigger('hallomodified');
       },
       _prepareDropdown: function(contentId) {
@@ -3030,7 +3043,7 @@
         buttonElement.hallodropdownbutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: 'linespace',
+          label: 'line_space',
           icon: icon,
           img: this.options.img,
           target: target,
@@ -3228,7 +3241,7 @@
       currentStyle: 'none',
       btns: [],
       populateToolbar: function(toolbar) {
-        var btn, buttonset, contentId, enabled, lineStyle, target, _ref;
+        var bgImage, btn, buttonset, contentId, enabled, lineStyle, target, _ref;
         this.widget = this;
         buttonset = jQuery("<span class=\"" + this.widgetName + "\"></span>");
         if (this.options.style === 'droptoggle') {
@@ -3249,7 +3262,15 @@
           }
         }
         buttonset.hallobuttonset();
-        return toolbar.append(buttonset);
+        toolbar.append(buttonset);
+        bgImage = this.options.editable.element.css('background-image');
+        if (bgImage === "linear-gradient(black 2px, transparent 2px)") {
+          return this.currentStyle = 'solid';
+        } else if (bgImage.indexOf('linear-gradient(to bottom') > 0) {
+          return this.currentStyle = 'dotted';
+        } else {
+          return this.currentStyle = 'none';
+        }
       },
       _makeDropdown: function(contentId) {
         var btn, contentArea, enabled, lineStyle, _ref;
@@ -3296,7 +3317,7 @@
         btn.hallobutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: lineStyle,
+          label: lineStyle + '_ruled_lines',
           icon: icon,
           img: img,
           queryState: function() {
@@ -3341,7 +3362,7 @@
           size = parseFloat(size.slice(0, -2));
         }
         if (lineStyle === 'solid') {
-          bgImage = "linear-gradient(to bottom,transparent " + (size - 2) + "px, black " + (size - 2) + "px, black 100%)";
+          bgImage = "linear-gradient(black 2px, transparent 2px)";
         } else {
           bgcolor = getComputedStyle(editable.element[0]).backgroundColor;
           bgImage = "linear-gradient(to right, " + bgcolor + " 50%, transparent 51%,transparent 100%),linear-gradient(to bottom,transparent " + (size - 2) + "px, black " + (size - 2) + "px, black 100%)";
@@ -3393,7 +3414,7 @@
         return toolbar.append(buttonset);
       },
       _makeActionBtn: function(list, enabled) {
-        var btn, icon, img;
+        var btn, icon, img, lbl;
         btn = jQuery('<span></span>');
         img = icon = null;
         if (typeof enabled !== 'boolean') {
@@ -3401,10 +3422,15 @@
         } else {
           icon = "icon-list-" + (list.toLowerCase());
         }
+        if (list === 'ordered') {
+          lbl = 'numbered_list';
+        } else if (list === 'unordered') {
+          lbl = 'bullet_points';
+        }
         btn.hallobutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
-          label: list,
+          label: lbl,
           command: "insert" + list + "List",
           icon: icon,
           img: img,
@@ -3713,7 +3739,7 @@
             };
             _applySz = function() {
               if (allOrNothing) {
-                el.children().css('font-size', '');
+                el.find('*').css('font-size', '');
                 return el.css('font-size', "" + sz + "px");
               } else {
                 return rangy.createStyleApplier("font-size: " + sz + "px;", {
@@ -4416,7 +4442,7 @@
             glyph = "<img src=\"" + img[0] + "\"></img>";
           }
         }
-        return jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + label + "\">          <span class=\"ui-button-text\">            " + glyph + "          </span>        </button>");
+        return jQuery("<button id=\"" + id + "\"        class=\"" + (classes.join(' ')) + "\" title=\"" + (label.replace(/_/g, ' ')) + "\">          <span class=\"ui-button-text\">            " + glyph + "          </span>        </button>");
       }
     });
     return jQuery.widget('IKS.hallobuttonset', {
@@ -4520,8 +4546,15 @@
         id = "" + this.options.uuid + "-" + this.options.label;
         if (this.options.cssClass === 'flat') {
           classes = ['ui-button-flat', 'ui-widget', 'ui-button-text-only'];
+          dropglyph = this.options.editable.options.dropglyph;
+          if (dropglyph) {
+            dropglyph = "<img src='" + dropglyph + "' class='ui-drop-down-button'></img>";
+          } else {
+            dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
+          }
         } else {
           classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
+          dropglyph = "<i class='icon-caret-down' style='float: right;'></i>";
         }
         if (this.options.icon !== null) {
           if (this.options.icon) {
@@ -4534,8 +4567,7 @@
             glyph = "<img src='" + this.options.img + "'></img>";
           }
         }
-        dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
-        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\">" + glyph + dropglyph + "</span>       </button>");
+        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + (this.options.label.replace(/_/g, ' ')) + "\">       <span class=\"ui-button-text\">" + glyph + dropglyph + "</span>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
@@ -4561,7 +4593,8 @@
         },
         cssClass: null,
         "default": null,
-        size: 10
+        size: 10,
+        change: null
       },
       _init: function() {
         var target,
@@ -4588,8 +4621,25 @@
         });
         return this.element.append(this.button);
       },
+      _activateEditField: function(active) {
+        var id, inp;
+        console.log('activatefield', active);
+        id = "" + this.options.uuid + "-" + this.options.label;
+        inp = $('#' + id + ' input');
+        inp.attr('readonly', active === true ? null : true);
+        if (active) {
+          this.options.editable.cachedSelection = this.options.editable.getSelection();
+          this.options.editable.keepActivated(true);
+          return inp.focus();
+        } else {
+          this.options.editable.keepActivated(false);
+          this.options.editable.element.focus();
+          return this.options.editable.restoreSelection(this.options.editable.cachedSelection);
+        }
+      },
       _showTarget: function() {
         var target;
+        this._activateEditField(true);
         target = jQuery(this.options.target);
         this._updateTargetPosition();
         target.addClass('open');
@@ -4597,6 +4647,7 @@
       },
       _hideTarget: function() {
         var target;
+        this._activateEditField(false);
         target = jQuery(this.options.target);
         target.removeClass('open');
         return target.hide();
@@ -4610,12 +4661,35 @@
         return target.css('left', left + this.options.targetOffset.x);
       },
       _prepareButton: function() {
-        var buttonEl, classes, id;
+        var buttonEl, classes, dropglyph, id,
+          _this = this;
         id = "" + this.options.uuid + "-" + this.options.label;
-        classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
-        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + this.options.label + "\">       <span class=\"ui-button-text\"><input type='text' size='" + this.options.size + "' value='" + this.options["default"] + "'></input>&nbsp;<i class=\"icon-caret-down\"></i></span>       </button>");
+        if (this.options.cssClass === 'flat') {
+          classes = ['ui-button-flat', 'ui-widget', 'ui-button-text-only'];
+          dropglyph = this.options.editable.options.dropglyph;
+          if (dropglyph) {
+            dropglyph = "<img src='" + dropglyph + "' class='ui-drop-down-button'></img>";
+          } else {
+            dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
+          }
+        } else {
+          classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
+          dropglyph = "<i class='icon-caret-down' style='float: right;'></i>";
+        }
+        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + (this.options.label.replace(/_/g, ' ')) + "\">       <div style='float: left;'>       <input readonly type='text' size='" + this.options.size + "' value='" + this.options["default"] + "'></input>&nbsp;       </div>       " + dropglyph + "       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
+        }
+        if (this.options.change) {
+          setTimeout(function() {
+            var inp;
+            inp = $('#' + id + ' input');
+            return inp.on('change', function() {
+              inp = $('#' + id + ' input');
+              _this.options.change(inp.val(), _this.options.editable);
+              return _this._hideTarget();
+            });
+          }, 300);
         }
         return buttonEl;
       }
@@ -4692,14 +4766,19 @@
         id = "" + this.options.uuid + "-" + this.options.label;
         if (this.options.cssClass === 'flat') {
           classes = ['ui-button-flat', 'ui-widget', 'ui-button-text-only'];
-          dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
+          dropglyph = this.options.editable.options.dropglyph;
+          if (dropglyph) {
+            dropglyph = "<img src='" + dropglyph + "' class='ui-drop-down-button'></img>";
+          } else {
+            dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
+          }
           textHtml = "<div style='float: left; margin-top: 6px;'>" + this.options["default"] + "&nbsp;</div>";
         } else {
           classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
           dropglyph = "<i class='icon-caret-down' style='float: right;'></i>";
           textHtml = "<span>" + this.options["default"] + "&nbsp;</span>";
         }
-        buttonEl = jQuery("<button id='" + id + "'       class='" + (classes.join(' ')) + "' title='" + this.options.label + "'>       <div style='width: " + this.options.width + "px;'>       " + textHtml + "       " + dropglyph + "</div>       </button>");
+        buttonEl = jQuery("<button id='" + id + "'       class='" + (classes.join(' ')) + "' title='" + (this.options.label.replace(/_/g, ' ')) + "'>       <div style='width: " + this.options.width + "px;'>       " + textHtml + "       " + dropglyph + "       </div>       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
