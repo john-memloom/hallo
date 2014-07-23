@@ -45,7 +45,9 @@
         evt.stopPropagation()
         if (evt.originalEvent)
           trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0]
-        @_hideTarget() unless @options.target[0] == trgt
+        return if @options.target[0] == trgt
+        return unless $(@options.target).hasClass('open')
+        @_hideTarget()  
 
       @element.append @button
 

@@ -4614,18 +4614,19 @@
         this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
         });
-        this.options.editable.element.on('hallodeactivated', function() {
-          return _this._hideTarget();
-        });
         this.options.editable.element.on('hallodropdownhidden', function(evt) {
           var trgt;
           evt.stopPropagation();
           if (evt.originalEvent) {
             trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0];
           }
-          if (_this.options.target[0] !== trgt) {
-            return _this._hideTarget();
+          if (_this.options.target[0] === trgt) {
+            return;
           }
+          if (!$(_this.options.target).hasClass('open')) {
+            return;
+          }
+          return _this._hideTarget();
         });
         return this.element.append(this.button);
       },
