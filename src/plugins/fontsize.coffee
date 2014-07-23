@@ -87,7 +87,6 @@
 
     _prepareQueryState: ->
       queryState = (event) =>
-        # @widget.options.editable.element.focus()
         setTimeout =>
           console.log('query state', event)
           r = @widget.options.editable.getSelection()

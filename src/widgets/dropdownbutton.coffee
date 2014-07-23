@@ -42,8 +42,14 @@
       target.on 'click', =>
         @_hideTarget()
 
-      @options.editable.element.on 'hallodeactivated', =>
+      @options.editable.element.on 'hallodeactivated' , =>
         @_hideTarget()
+
+      @options.editable.element.on 'hallodropdownhidden', (evt) =>
+        evt.stopPropagation()
+        if (evt.originalEvent)
+          trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0]
+        @_hideTarget() unless @options.target[0] == trgt
 
       @element.append @button
 

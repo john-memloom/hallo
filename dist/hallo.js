@@ -251,21 +251,6 @@
         };
         return "" + (S4()) + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + "-" + (S4()) + (S4()) + (S4());
       },
-      hidemenus: function(evt) {
-        var target,
-          _this = this;
-        if (!evt) {
-          target = null;
-        } else {
-          target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0];
-          evt.stopPropagation();
-        }
-        return $('.hallotoolbar .dropdown-menu').each(function(idx, el) {
-          if (el !== target) {
-            return $(el).hide();
-          }
-        });
-      },
       _addDropdownMenuHandlers: function() {
         var _this = this;
         if (!this.toolbar) {
@@ -273,14 +258,14 @@
         }
         this.toolbar.find('button').each(function(idx, el) {
           return $(el.parentElement).on("click", function(evt) {
-            return _this.hidemenus(evt);
+            return _this._trigger("dropdownhidden", evt);
           });
         });
         $(this.element).on("click", function() {
-          return _this.hidemenus(null);
+          return _this._trigger("dropdownhidden", null);
         });
         return $('.hallotoolbar').on("click", function() {
-          return _this.hidemenus(null);
+          return _this._trigger("dropdownhidden", null);
         });
       },
       _prepareToolbar: function() {
@@ -4382,7 +4367,7 @@
             if (typeof queryState === 'function') {
               queryState();
             }
-            return false;
+            return true;
           });
         }
         if (!this.options.queryState) {
@@ -4518,6 +4503,16 @@
         this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
         });
+        this.options.editable.element.on('hallodropdownhidden', function(evt) {
+          var trgt;
+          evt.stopPropagation();
+          if (evt.originalEvent) {
+            trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0];
+          }
+          if (_this.options.target[0] !== trgt) {
+            return _this._hideTarget();
+          }
+        });
         return this.element.append(this.button);
       },
       _showTarget: function() {
@@ -4619,6 +4614,19 @@
         this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
         });
+        this.options.editable.element.on('hallodeactivated', function() {
+          return _this._hideTarget();
+        });
+        this.options.editable.element.on('hallodropdownhidden', function(evt) {
+          var trgt;
+          evt.stopPropagation();
+          if (evt.originalEvent) {
+            trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0];
+          }
+          if (_this.options.target[0] !== trgt) {
+            return _this._hideTarget();
+          }
+        });
         return this.element.append(this.button);
       },
       _activateEditField: function(active) {
@@ -4634,7 +4642,9 @@
         } else {
           this.options.editable.keepActivated(false);
           this.options.editable.element.focus();
-          return this.options.editable.restoreSelection(this.options.editable.cachedSelection);
+          if (this.options.editable.cachedSelection) {
+            return this.options.editable.restoreSelection(this.options.editable.cachedSelection);
+          }
         }
       },
       _showTarget: function() {
@@ -4737,6 +4747,16 @@
         });
         this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
+        });
+        this.options.editable.element.on('hallodropdownhidden', function(evt) {
+          var trgt;
+          evt.stopPropagation();
+          if (evt.originalEvent) {
+            trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0];
+          }
+          if (_this.options.target[0] !== trgt) {
+            return _this._hideTarget();
+          }
         });
         return this.element.append(this.button);
       },

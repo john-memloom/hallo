@@ -41,6 +41,12 @@
       @options.editable.element.on 'hallodeactivated', =>
         @_hideTarget()
 
+      @options.editable.element.on 'hallodropdownhidden', (evt) =>
+        evt.stopPropagation()
+        if (evt.originalEvent)
+          trgt = $(evt.originalEvent.currentTarget.parentElement).find('.dropdown-menu')[0]
+        @_hideTarget() unless @options.target[0] == trgt
+
       @element.append @button
 
     _activateEditField: (active) ->
@@ -55,7 +61,7 @@
       else
         @options.editable.keepActivated false
         @options.editable.element.focus()
-        @options.editable.restoreSelection(@options.editable.cachedSelection)
+        @options.editable.restoreSelection(@options.editable.cachedSelection) if @options.editable.cachedSelection
 
     _showTarget: ->
       @_activateEditField(true)

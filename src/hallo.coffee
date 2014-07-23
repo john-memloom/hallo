@@ -301,22 +301,15 @@ http://hallojs.org
         ((1 + Math.random()) * 0x10000|0).toString(16).substring 1
       "#{S4()}#{S4()}-#{S4()}-#{S4()}-#{S4()}-#{S4()}#{S4()}#{S4()}"
 
-    hidemenus: (evt) ->
-      unless evt
-        target = null 
-      else
-        target = $(evt.currentTarget.parentElement).find('.dropdown-menu')[0]
-        evt.stopPropagation()
-      $('.hallotoolbar .dropdown-menu').each (idx,el) =>
-        $(el).hide() unless el == target
-      
-
     _addDropdownMenuHandlers: ->
       return unless @toolbar
       @toolbar.find('button').each (idx,el) =>
-        $(el.parentElement).on "click", (evt) => @hidemenus(evt)
-      $(@element).on "click", => @hidemenus null
-      $('.hallotoolbar').on "click", => @hidemenus(null)
+        $(el.parentElement).on "click", (evt) => 
+          @_trigger "dropdownhidden", evt
+      $(@element).on "click", =>
+        @_trigger "dropdownhidden", null
+      $('.hallotoolbar').on "click", => 
+        @_trigger "dropdownhidden", null
 
     _prepareToolbar: ->
       @toolbar = jQuery('<div class="hallotoolbar"></div>').hide()
