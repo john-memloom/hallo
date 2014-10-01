@@ -14,6 +14,7 @@
       uuid: ''
       sizes: [8,9,10,11,12,14,18,24,30,36,48,60,72,96]
       buttonCssClass: null
+      withInputField: false
 
     populateToolbar: (toolbar) ->
       @widget = this
@@ -31,6 +32,7 @@
       # buttonset.append @_makeSizerButton("up")
       # buttonset.append @_makeSizerButton("down")
       @_prepareQueryState()
+      @_updateToolbarDisplay()
 
 
     _makeSizerButton: (direction) ->
@@ -52,14 +54,25 @@
     setSize: (size, editable) ->
       editable ||= @widget.options.editable
       el = editable.element
-      r = editable.cachedSelection
+      if (@widget.options.withInputField==true)
+        r = editable.cachedSelection
+      else
+        r = editable.getSelection()
+      # rCopy = r
       allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
       if (allOrNothing)              
         el.find('*').css('font-size', '')
         el.css('font-size', size + 'px')
       else
         rangy.createStyleApplier("font-size: #{size}px;", {normalize: true}).applyToRange(r)
-      editable.element.trigger('hallomodified')
+      unless (@widget.options.withInputField==true)
+        $('#' + @widget.options.uuid + '-font_size').find('.inner-text').text(size)
+
+      sel = rangy.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(r)
+
+      editable.element.trigger('hallomodified', {triggeredBy: 'fontsize'})
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-size-list ui-droplist'></div>"
@@ -72,28 +85,81 @@
       contentArea
 
     _prepareButton: (target) ->
+
       buttonElement = jQuery '<span></span>'
-      buttonElement.hallodropdownedit
-        uuid: @options.uuid
-        editable: @options.editable
-        label: 'font_size'
-        default: '14'
-        size: 3
-        change: @widget.setSize
-        target: target
-        targetOffset: {x:0, y:0}
-        cssClass: @options.buttonCssClass
+
+      if @options.withInputField
+        buttonElement.hallodropdownedit
+          uuid: @options.uuid
+          editable: @options.editable
+          label: 'font_size'
+          default: '14'
+          size: 3
+          change: @widget.setSize
+          target: target
+          targetOffset: {x:0, y:0}
+          cssClass: @options.buttonCssClass
+      else
+        buttonElement.hallodropdowntext
+          uuid: @options.uuid
+          editable: @options.editable
+          label: 'font_size'
+          default: '14'
+          width: 50
+          change: @widget.setSize
+          target: target
+          targetOffset: {x:0, y:0}
+          cssClass: @options.buttonCssClass
+
       buttonElement
+
+    _updateToolbarDisplay: ->
+
+      r = @widget.options.editable.getSelection()
+      el = r.startContainer.parentElement
+      if el 
+        if (@widget.options.editable.element.closest(el).length > 0)
+          el = @widget.options.editable.element[0]
+      else
+        el = @widget.options.editable.element[0]
+      if (r.startOffset == r.endOffset) && (r.startOffset == 0) && (el.firstElementChild != null) && (typeof el.firstElementChild != 'undefined')
+        el = el.firstElementChild 
+      size = getComputedStyle(el).getPropertyValue('font-size').slice(0,-2)
+      if (@widget.options.withInputField==true)
+        $('#' + @widget.options.uuid + '-font_size input').val(size)
+      else
+        $('#' + @widget.options.uuid + '-font_size').find('.inner-text').text(size)
+
+      sz1 = parseInt(size)
+      items = $('.font-size-item')
+      items.removeClass('selected')
+      first = true
+      found = false
+      items.each (idx,item) =>
+        item = $(item)
+        sz2 = parseInt(item.text())
+        if (sz1==sz2)
+          item.addClass('selected')
+          found = true
+          return false
+        if (sz1 < sz2)
+          if first
+            item.addClass('selected')
+          else
+            item.previousSibling.addClass('selected')
+          found = true
+          return false
+      items.last().addClass('selected') unless found
 
     _prepareQueryState: ->
       queryState = (event) =>
-        setTimeout =>
-          console.log('query state', event)
-          r = @widget.options.editable.getSelection()
-          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2)
-          el = $('#' + @widget.options.uuid + '-font_size input')[0]
-          $(el).val(size)
-        , 300
+        if (@widget.options.withInputField==true)
+          setTimeout =>
+            @_updateToolbarDisplay()
+          , 300
+        else
+          @_updateToolbarDisplay()
+
       events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>

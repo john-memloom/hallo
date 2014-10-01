@@ -18,7 +18,7 @@
       html: null
       editable: null
       target: ''
-      targetOffset: { x: -20, y: 0}
+      targetOffset: { x: 0, y: 0}
       cssClass: null
 
     _create: ->

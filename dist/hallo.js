@@ -902,9 +902,10 @@
         return buttonElement;
       },
       _getCurrentCols: function() {
-        var c, r;
+        var c, el, r;
         r = this.widget.options.editable.getSelection();
-        c = getComputedStyle(r.startContainer.parentElement).getPropertyValue('column-count') || getComputedStyle(r.startContainer.parentElement).getPropertyValue('-moz-column-count') || getComputedStyle(r.startContainer.parentElement).getPropertyValue('-webkit-column-count');
+        el = r.startContainer.parentElement || this.widget.options.editable.element[0];
+        c = getComputedStyle(el).getPropertyValue('column-count') || getComputedStyle(el).getPropertyValue('-moz-column-count') || getComputedStyle(el).getPropertyValue('-webkit-column-count');
         return parseInt(c, 10) || 1;
       },
       _prepareQueryState: function() {
@@ -923,6 +924,178 @@
         return this.options.editable.element.on('hallodisabled', function() {
           return _this.options.editable.element.off(events, queryState);
         });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget('IKS.deleteall', {
+      options: {
+        default_styles: ''
+      },
+      _create: function() {
+        var widget,
+          _this = this;
+        widget = this;
+        return widget.element.bind('hallomodified', this, function(e) {
+          var node, range, sel;
+          if (widget.element.text().trim() === '') {
+            widget.element.children().remove();
+            widget.element.append("<div style='" + widget.options.default_styles + "'></div>");
+            node = widget.element.children().first()[0];
+            range = rangy.createRange();
+            range.setStartAfter(node);
+            range.setEndAfter(node);
+            sel = rangy.getSelection();
+            sel.removeAllRanges();
+            return sel.addRange(range);
+          }
+        });
+      }
+    });
+  })(jQuery);
+
+}).call(this);
+
+(function() {
+  (function(jQuery) {
+    return jQuery.widget("IKS.fontautosize", {
+      options: {
+        uuid: '',
+        editable: null,
+        icon: null,
+        img: null
+      },
+      autoSizeButton: null,
+      populateToolbar: function(toolbar) {
+        var buttonset, icon, img, isActive, refresh, widget, _autoSize;
+        widget = this;
+        _autoSize = function() {
+          var children, children_sz, columnClass, columns, divsWithTableCell, el, ff, originalHeight, originalSize, originalWidth, original_sz, safeguard, sz,
+            _this = this;
+          el = widget.options.editable.element;
+          columns = parseInt(el.css('column-count')) || 1;
+          if (columns > 1) {
+            originalWidth = el.width();
+            originalHeight = el.height();
+            if (el.hasClass('two-columns')) {
+              el.removeClass('two-columns');
+              columnClass = 'two-columns';
+              ff = 0;
+            } else if (el.hasClass('three-columns')) {
+              el.removeClass('three-columns');
+              columnClass = 'three-columns';
+              ff = 50;
+            } else {
+              console.log("UNKNOWN COLUMN CLASS...");
+            }
+            el.css('height', el.height() * columns);
+            el.css('width', (el.width() / columns) - ff);
+          }
+          divsWithTableCell = el.find('*').filter(function(idx, el) {
+            return $(el).css('display') === 'table-cell';
+          });
+          if (divsWithTableCell.length > 0) {
+            divsWithTableCell.css('display', 'block');
+            el.css('display', 'block');
+          }
+          sz = px2num(el.css('font-size'));
+          originalSize = sz;
+          children = el.find('*').filter(function(idx, el) {
+            return $(el)[0].style.fontSize !== '';
+          });
+          children_sz = [];
+          original_sz = [];
+          children.each(function(idx, el) {
+            children_sz[idx] = px2num($(el).css('font-size'));
+            return original_sz[idx] = children_sz[idx];
+          });
+          if (el.text().trim() === '') {
+            el.css('font-size', "" + (el.height()) + "px");
+          } else {
+            safeguard = 500;
+            while ((safeguard-- > 0) && (el[0].scrollHeight <= el.height())) {
+              el.css('font-size', "" + (++sz) + "px");
+              children.each(function(idx, el) {
+                return $(el).css('font-size', "" + (++children_sz[idx]) + "px");
+              });
+            }
+            while (safeguard-- > 0 && el[0].scrollHeight > el.height()) {
+              el.css('font-size', "" + (--sz) + "px");
+              children.each(function(idx, el) {
+                return $(el).css('font-size', "" + (--children_sz[idx]) + "px");
+              });
+            }
+            if (safeguard <= 0) {
+              console.log("SAFEGUARD TRIPPED!");
+              el.css('font-size', "" + originalSize + "px");
+              children.each(function(idx, el) {
+                return $(el).css('font-size', "" + original_sz[idx] + "px");
+              });
+            }
+            if (columns > 1) {
+              el.addClass(columnClass);
+              el.height(originalHeight);
+              el.css('width', originalWidth);
+            }
+          }
+          if (divsWithTableCell.length > 0) {
+            divsWithTableCell.css('display', 'table-cell');
+            return el.css('display', 'table');
+          }
+        };
+        this.autoSizeButton = jQuery('<span></span>');
+        img = icon = null;
+        img = this.options.img;
+        if (!img) {
+          icon = this.options.icon || 'icon-fullscreen';
+        }
+        this.autoSizeButton.hallobutton({
+          uuid: this.options.uuid,
+          editable: this.options.editable,
+          label: 'automatically size the text',
+          icon: icon,
+          img: img,
+          cssClass: this.options.buttonCssClass
+        });
+        refresh = function() {
+          var i;
+          if (isActive()) {
+            i = 1;
+          } else {
+            i = 0;
+          }
+          return widget.autoSizeButton.find('img').attr('src', widget.options.img[i]);
+        };
+        isActive = function() {
+          return widget.autoSizeButton.children().hasClass('ui-state-active');
+        };
+        this.autoSizeButton.on("click", function(event) {
+          widget.autoSizeButton.children().toggleClass('ui-state-active');
+          refresh();
+          if (isActive()) {
+            _autoSize();
+            return widget.options.editable.element.trigger('hallomodified', {
+              triggeredBy: 'fontautosize'
+            });
+          }
+        });
+        this.options.editable.element.on("hallomodified", function(event, data) {
+          if (data && data.triggeredBy === 'fontsize' && isActive()) {
+            widget.autoSizeButton.children().removeClass('ui-state-active');
+            refresh();
+          }
+          if (isActive()) {
+            return _autoSize();
+          }
+        });
+        buttonset = jQuery("<span class=\"" + widget.widgetName + "\"></span>");
+        buttonset.append(this.autoSizeButton);
+        buttonset.hallobuttonset();
+        return toolbar.append(buttonset);
       }
     });
   })(jQuery);
@@ -952,7 +1125,8 @@
         buttonset.hallobuttonset();
         buttonset.append(target);
         buttonset.append(this._prepareButton(target));
-        return this._prepareQueryState();
+        this._prepareQueryState();
+        return this._updateToolbarDisplay();
       },
       _prepareDropdown: function(contentId) {
         var addColor, color, contentArea, section, sectionName, _i, _j, _len, _len1, _ref, _ref1,
@@ -962,19 +1136,25 @@
           var colorBlock;
           colorBlock = jQuery("<div class='font-color-block' style='background-color: \#" + color + "; border-color: \#" + color + "'></div>");
           return colorBlock.on("click", function(evt) {
-            var allOrNothing, el, r;
+            var allOrNothing, el, r, sel;
             color = colorBlock.css('background-color');
             el = _this.widget.options.editable.element;
             r = _this.widget.options.editable.getSelection();
             allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
             if (allOrNothing) {
               el.find('*').css('color', color);
+              el.css('color', color);
             } else {
               rangy.createStyleApplier("color: " + color + ";", {
                 normalize: true
               }).applyToRange(r);
+              $(r.startContainer).closest('li').css('color', color);
+              $(r.getNodes()).css('color', color);
             }
             $(evt.target).closest('.fontcolor').find('.font-color-button').css('background-color', color);
+            sel = rangy.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(r);
             return _this.widget.options.editable.element.trigger('hallomodified');
           });
         };
@@ -994,29 +1174,40 @@
       _prepareButton: function(target) {
         var buttonElement, buttonGlyph;
         buttonElement = jQuery('<span></span>');
-        buttonGlyph = '<div class="font-color-button">&nbsp;</div>';
+        buttonGlyph = '<span class="font-color-button">&nbsp;</span>';
         buttonElement.hallodropdownbutton({
           uuid: this.options.uuid,
           editable: this.options.editable,
           label: 'font_colors',
           html: buttonGlyph,
           target: target,
-          targetOffset: {
-            x: 0,
-            y: 0
-          },
+          targetOffset: this.options.targetOffset,
           cssClass: this.options.buttonCssClass
         });
         return buttonElement;
+      },
+      _updateToolbarDisplay: function() {
+        var color, el, r;
+        r = this.widget.options.editable.getSelection();
+        el = r.startContainer.parentElement;
+        if (el) {
+          if (this.widget.options.editable.element.closest(el).length > 0) {
+            el = this.widget.options.editable.element[0];
+          }
+        } else {
+          el = this.widget.options.editable.element[0];
+        }
+        if ((r.startOffset === r.endOffset) && (r.startOffset === 0) && (el.firstElementChild !== null) && (typeof el.firstElementChild !== 'undefined')) {
+          el = el.firstElementChild;
+        }
+        color = getComputedStyle(el).getPropertyValue('color');
+        return this.widget.options.toolbar.find('.font-color-button').css('background-color', color);
       },
       _prepareQueryState: function() {
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          var color, r;
-          r = _this.widget.options.editable.getSelection();
-          color = getComputedStyle(r.startContainer.parentElement).getPropertyValue('color');
-          return _this.widget.options.toolbar.find('.font-color-button').css('background-color', color);
+          return _this._updateToolbarDisplay();
         };
         events = 'keyup paste change hallomodified mouseup';
         this.options.editable.element.on(events, queryState);
@@ -1040,6 +1231,7 @@
         toolbar: null,
         uuid: '',
         buttonCssClass: null,
+        "default": 'Times',
         fonts: ['Arial', 'Times', 'Verdana']
       },
       populateToolbar: function(toolbar) {
@@ -1052,26 +1244,51 @@
         buttonset.hallobuttonset();
         buttonset.append(target);
         buttonset.append(this._prepareButton(target));
-        return this._prepareQueryState();
+        this._prepareQueryState();
+        return this._updateToolbarDisplay();
+      },
+      _updateToolbarDisplay: function() {
+        var el, font, item, items, name, r,
+          _this = this;
+        r = this.widget.options.editable.getSelection();
+        el = r.startContainer.parentElement;
+        if (el) {
+          if (this.widget.options.editable.element.closest(el).length > 0) {
+            el = this.widget.options.editable.element[0];
+          }
+        } else {
+          el = this.widget.options.editable.element[0];
+        }
+        if ((r.startOffset === r.endOffset) && (r.startOffset === 0) && (el.firstElementChild !== null) && (typeof el.firstElementChild !== 'undefined')) {
+          el = el.firstElementChild;
+        }
+        font = getComputedStyle(el).getPropertyValue('font-family');
+        el = $('#' + this.widget.options.uuid + '-fonts').find('.inner-text')[0];
+        if (this.widget.fontNames) {
+          font = font.split(',')[0].trim().toLowerCase();
+          if (font[0] === "'" || font[0] === '"') {
+            font = font.slice(1, -1);
+          }
+          name = this.widget.fontNames[font];
+          if (!name) {
+            name = font;
+          }
+        } else {
+          name = font;
+        }
+        items = $('.font-item');
+        items.removeClass('selected');
+        item = items.filter(function(idx, el) {
+          return $(el).text().trim().toLowerCase() === name.trim().toLowerCase();
+        });
+        item.addClass('selected');
+        return $(el).text(name);
       },
       _prepareQueryState: function() {
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          var el, font, name, r;
-          r = _this.widget.options.editable.getSelection();
-          font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family');
-          el = $('#' + _this.widget.options.uuid + '-fonts').children().children()[0];
-          if (_this.widget.fontNames) {
-            font = font.split(',')[0].trim();
-            name = _this.widget.fontNames[font];
-            if (!name) {
-              name = font;
-            }
-          } else {
-            name = font;
-          }
-          return $(el).text(name);
+          return _this._updateToolbarDisplay();
         };
         events = 'keyup paste change hallomodified mouseup';
         this.options.editable.element.on(events, queryState);
@@ -1086,7 +1303,7 @@
         var addCallback, addFont, applyFont, contentArea, font, heading, klass, txt, _i, _len, _ref,
           _this = this;
         applyFont = function(font, name) {
-          var allOrNothing, el, r;
+          var allOrNothing, el, r, sel;
           el = _this.widget.options.editable.element;
           r = _this.widget.options.editable.getSelection();
           allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
@@ -1098,8 +1315,11 @@
               normalize: true
             }).applyToRange(r);
           }
-          el = $('#' + _this.widget.options.uuid + '-fonts').children().children()[0];
+          el = $('#' + _this.widget.options.uuid + '-fonts').find('.inner-text')[0];
           $(el).text(name);
+          sel = rangy.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
           return _this.widget.options.editable.element.trigger('hallomodified');
         };
         addFont = function(font) {
@@ -1154,7 +1374,7 @@
           uuid: this.options.uuid,
           editable: this.options.editable,
           label: 'fonts',
-          "default": 'Times',
+          "default": this.options["default"],
           target: target,
           targetOffset: {
             x: 0,
@@ -1178,7 +1398,8 @@
         toolbar: null,
         uuid: '',
         sizes: [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96],
-        buttonCssClass: null
+        buttonCssClass: null,
+        withInputField: false
       },
       populateToolbar: function(toolbar) {
         var buttonset, contentId, target;
@@ -1190,7 +1411,8 @@
         buttonset.hallobuttonset();
         buttonset.append(target);
         buttonset.append(this._prepareButton(target));
-        return this._prepareQueryState();
+        this._prepareQueryState();
+        return this._updateToolbarDisplay();
       },
       _makeSizerButton: function(direction) {
         var btn,
@@ -1217,10 +1439,14 @@
         });
       },
       setSize: function(size, editable) {
-        var allOrNothing, el, r;
+        var allOrNothing, el, r, sel;
         editable || (editable = this.widget.options.editable);
         el = editable.element;
-        r = editable.cachedSelection;
+        if (this.widget.options.withInputField === true) {
+          r = editable.cachedSelection;
+        } else {
+          r = editable.getSelection();
+        }
         allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
         if (allOrNothing) {
           el.find('*').css('font-size', '');
@@ -1230,7 +1456,15 @@
             normalize: true
           }).applyToRange(r);
         }
-        return editable.element.trigger('hallomodified');
+        if (!(this.widget.options.withInputField === true)) {
+          $('#' + this.widget.options.uuid + '-font_size').find('.inner-text').text(size);
+        }
+        sel = rangy.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+        return editable.element.trigger('hallomodified', {
+          triggeredBy: 'fontsize'
+        });
       },
       _prepareDropdown: function(contentId) {
         var addSize, contentArea, size, _i, _len, _ref,
@@ -1253,34 +1487,99 @@
       _prepareButton: function(target) {
         var buttonElement;
         buttonElement = jQuery('<span></span>');
-        buttonElement.hallodropdownedit({
-          uuid: this.options.uuid,
-          editable: this.options.editable,
-          label: 'font_size',
-          "default": '14',
-          size: 3,
-          change: this.widget.setSize,
-          target: target,
-          targetOffset: {
-            x: 0,
-            y: 0
-          },
-          cssClass: this.options.buttonCssClass
-        });
+        if (this.options.withInputField) {
+          buttonElement.hallodropdownedit({
+            uuid: this.options.uuid,
+            editable: this.options.editable,
+            label: 'font_size',
+            "default": '14',
+            size: 3,
+            change: this.widget.setSize,
+            target: target,
+            targetOffset: {
+              x: 0,
+              y: 0
+            },
+            cssClass: this.options.buttonCssClass
+          });
+        } else {
+          buttonElement.hallodropdowntext({
+            uuid: this.options.uuid,
+            editable: this.options.editable,
+            label: 'font_size',
+            "default": '14',
+            width: 50,
+            change: this.widget.setSize,
+            target: target,
+            targetOffset: {
+              x: 0,
+              y: 0
+            },
+            cssClass: this.options.buttonCssClass
+          });
+        }
         return buttonElement;
+      },
+      _updateToolbarDisplay: function() {
+        var el, first, found, items, r, size, sz1,
+          _this = this;
+        r = this.widget.options.editable.getSelection();
+        el = r.startContainer.parentElement;
+        if (el) {
+          if (this.widget.options.editable.element.closest(el).length > 0) {
+            el = this.widget.options.editable.element[0];
+          }
+        } else {
+          el = this.widget.options.editable.element[0];
+        }
+        if ((r.startOffset === r.endOffset) && (r.startOffset === 0) && (el.firstElementChild !== null) && (typeof el.firstElementChild !== 'undefined')) {
+          el = el.firstElementChild;
+        }
+        size = getComputedStyle(el).getPropertyValue('font-size').slice(0, -2);
+        if (this.widget.options.withInputField === true) {
+          $('#' + this.widget.options.uuid + '-font_size input').val(size);
+        } else {
+          $('#' + this.widget.options.uuid + '-font_size').find('.inner-text').text(size);
+        }
+        sz1 = parseInt(size);
+        items = $('.font-size-item');
+        items.removeClass('selected');
+        first = true;
+        found = false;
+        items.each(function(idx, item) {
+          var sz2;
+          item = $(item);
+          sz2 = parseInt(item.text());
+          if (sz1 === sz2) {
+            item.addClass('selected');
+            found = true;
+            return false;
+          }
+          if (sz1 < sz2) {
+            if (first) {
+              item.addClass('selected');
+            } else {
+              item.previousSibling.addClass('selected');
+            }
+            found = true;
+            return false;
+          }
+        });
+        if (!found) {
+          return items.last().addClass('selected');
+        }
       },
       _prepareQueryState: function() {
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          return setTimeout(function() {
-            var el, r, size;
-            console.log('query state', event);
-            r = _this.widget.options.editable.getSelection();
-            size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2);
-            el = $('#' + _this.widget.options.uuid + '-font_size input')[0];
-            return $(el).val(size);
-          }, 300);
+          if (_this.widget.options.withInputField === true) {
+            return setTimeout(function() {
+              return _this._updateToolbarDisplay();
+            }, 300);
+          } else {
+            return _this._updateToolbarDisplay();
+          }
         };
         events = 'keyup paste change mouseup hallomodified';
         this.options.editable.element.on(events, queryState);
@@ -2978,24 +3277,28 @@
         });
       },
       setSize: function(size) {
-        var allOrNothing, el, lh, r;
+        var allOrNothing, el, lh, r, sel;
         el = this.widget.options.editable.element;
         r = this.widget.options.editable.getSelection();
         allOrNothing = r.toString() === '' || (r.toString().trim() === el.text().trim());
+        lh = "" + size + 'em';
         if (size === '1' || size === 1) {
           lh = 'normal';
-        } else {
-          lh = (parseFloat(size) * 120) + '%';
         }
         if (allOrNothing) {
           el.find('*').css('line-height', '');
           el.css('line-height', lh);
         } else {
+          r.selectNode(r.commonAncestorContainer);
           rangy.createStyleApplier("line-height: " + lh + ";", {
-            normalize: true
+            normalize: true,
+            elementTagName: "div"
           }).applyToRange(r);
         }
         $('#' + this.widget.options.uuid + '-line_space input').val(size + "x");
+        sel = rangy.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
         return this.widget.options.editable.element.trigger('hallomodified');
       },
       _prepareDropdown: function(contentId) {
@@ -3044,18 +3347,25 @@
         var events, queryState,
           _this = this;
         queryState = function(event) {
-          var fsize, r, size;
+          var el, fsize, item, items, r, size;
           r = _this.widget.options.editable.getSelection();
-          size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height');
+          el = r.startContainer.parentElement || _this.widget.options.editable.element[0];
+          size = getComputedStyle(el).getPropertyValue('line-height');
           if (size === 'normal') {
             size = 1;
           } else {
             size = parseFloat(size.slice(0, -2));
-            fsize = parseFloat(getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0, -2));
-            size = (size / fsize) / 1.2;
+            fsize = parseFloat(getComputedStyle(el).getPropertyValue('font-size').slice(0, -2));
+            size = size / fsize;
             size = Math.round(size * 10) / 10;
           }
-          return $('#' + _this.widget.options.uuid + '-linespace input').val(size + 'x');
+          $('#' + _this.widget.options.uuid + '-linespace input').val(size + 'x');
+          items = $('.linespace-item');
+          items.removeClass('selected');
+          item = items.filter(function(idx, el) {
+            return $(el).text().trim() === ('' + size);
+          });
+          return item.addClass('selected');
         };
         events = 'keyup paste change mouseup hallomodified';
         this.options.editable.element.on(events, queryState);
@@ -3864,7 +4174,12 @@
           cssClass: this.options.buttonCssClass
         });
         btn.on("click", function(evt) {
+          var r, sel;
+          r = _this.options.editable.getSelection();
           _this.verticallyAlign(evt, alignment, _this.options.editable.element);
+          sel = rangy.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
           return _this.options.editable.element.trigger('hallomodified');
         });
         return btn;
@@ -4137,6 +4452,7 @@
           return _this.toolbar.show();
         });
         return this.element.on('hallodeactivated', function(event, data) {
+          console.log('toolbar deactivated');
           return _this.toolbar.hide();
         });
       }
@@ -4469,7 +4785,7 @@
         editable: null,
         target: '',
         targetOffset: {
-          x: -20,
+          x: 0,
           y: 0
         },
         cssClass: null
@@ -4583,7 +4899,7 @@
         editable: null,
         target: '',
         targetOffset: {
-          x: -20,
+          x: 0,
           y: 0
         },
         cssClass: null,
@@ -4632,7 +4948,6 @@
       },
       _activateEditField: function(active) {
         var id, inp;
-        console.log('activatefield', active);
         id = "" + this.options.uuid + "-" + this.options.label;
         inp = $('#' + id + ' input');
         inp.attr('readonly', active === true ? null : true);
@@ -4687,7 +5002,7 @@
           classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
           dropglyph = "<i class='icon-caret-down' style='float: right;'></i>";
         }
-        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + (this.options.label.replace(/_/g, ' ')) + "\">       <div style='float: left;'>       <input readonly type='text' size='" + this.options.size + "' value='" + this.options["default"] + "'></input>&nbsp;       </div>       " + dropglyph + "       </button>");
+        buttonEl = jQuery("<button id=\"" + id + "\"       class=\"" + (classes.join(' ')) + "\" title=\"" + (this.options.label.replace(/_/g, ' ')) + "\">       <input readonly type='text' size='" + this.options.size + "' value='" + this.options["default"] + "'></input>       " + dropglyph + "       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }
@@ -4719,7 +5034,7 @@
         editable: null,
         target: '',
         targetOffset: {
-          x: -20,
+          x: 0,
           y: 0
         },
         cssClass: null,
@@ -4743,8 +5058,10 @@
           }
           return _this._showTarget();
         });
-        target.on('click', function() {
-          return _this._hideTarget();
+        target.on('click', function(evt) {
+          if (evt.target === evt.currentTarget) {
+            return evt.stopPropagation();
+          }
         });
         this.options.editable.element.on('hallodeactivated', function() {
           return _this._hideTarget();
@@ -4762,11 +5079,15 @@
         return this.element.append(this.button);
       },
       _showTarget: function() {
-        var target;
+        var selected, target;
         target = jQuery(this.options.target);
         this._updateTargetPosition();
         target.addClass('open');
-        return target.show();
+        target.show();
+        selected = target.children('.selected');
+        if (selected.length > 0) {
+          return target.scrollTop(selected[0].offsetTop);
+        }
       },
       _hideTarget: function() {
         var target;
@@ -4793,13 +5114,13 @@
           } else {
             dropglyph = "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>";
           }
-          textHtml = "<div style='float: left; margin-top: 6px;'>" + this.options["default"] + "&nbsp;</div>";
+          textHtml = "<div class='inner-text' style='float: left; margin-top: 6px;'>" + this.options["default"] + "&nbsp;</div>";
         } else {
           classes = ['ui-button', 'ui-widget', 'ui-state-default', 'ui-corner-all', 'ui-button-text-only'];
           dropglyph = "<i class='icon-caret-down' style='float: right;'></i>";
           textHtml = "<span>" + this.options["default"] + "&nbsp;</span>";
         }
-        buttonEl = jQuery("<button id='" + id + "'       class='" + (classes.join(' ')) + "' title='" + (this.options.label.replace(/_/g, ' ')) + "'>       <div style='width: " + this.options.width + "px;'>       " + textHtml + "       " + dropglyph + "       </div>       </button>");
+        buttonEl = jQuery("<button id='" + id + "'       class='" + (classes.join(' ')) + "' title='" + (this.options.label.replace(/_/g, ' ')) + "'>       " + textHtml + "       " + dropglyph + "       </button>");
         if (this.options.cssClass) {
           buttonEl.addClass(this.options.cssClass);
         }

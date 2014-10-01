@@ -15,7 +15,7 @@
       label: null
       editable: null
       target: ''
-      targetOffset: { x: -20, y: 0}
+      targetOffset: { x: 0, y: 0}
       cssClass: null
       default: null
       size: 10
@@ -52,7 +52,7 @@
       @element.append @button
 
     _activateEditField: (active) ->
-      console.log('activatefield', active)
+      # console.log('activatefield', active)
       id = "#{@options.uuid}-#{@options.label}"
       inp = $('#' + id + ' input')
       inp.attr('readonly', if active==true then null else true)
@@ -109,9 +109,7 @@
         dropglyph = "<i class='icon-caret-down' style='float: right;'></i>"
       buttonEl = jQuery "<button id=\"#{id}\"
        class=\"#{classes.join(' ')}\" title=\"#{@options.label.replace(/_/g, ' ')}\">
-       <div style='float: left;'>
-       <input readonly type='text' size='#{@options.size}' value='#{@options.default}'></input>&nbsp;
-       </div>
+       <input readonly type='text' size='#{@options.size}' value='#{@options.default}'></input>
        #{dropglyph}
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass

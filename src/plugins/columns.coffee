@@ -76,9 +76,10 @@
 
     _getCurrentCols: () ->
       r = @widget.options.editable.getSelection()
-      c = getComputedStyle(r.startContainer.parentElement).getPropertyValue('column-count') ||
-          getComputedStyle(r.startContainer.parentElement).getPropertyValue('-moz-column-count') ||
-          getComputedStyle(r.startContainer.parentElement).getPropertyValue('-webkit-column-count') 
+      el = r.startContainer.parentElement || @widget.options.editable.element[0]
+      c = getComputedStyle(el).getPropertyValue('column-count') ||
+          getComputedStyle(el).getPropertyValue('-moz-column-count') ||
+          getComputedStyle(el).getPropertyValue('-webkit-column-count') 
       parseInt(c, 10) || 1
 
     _prepareQueryState: ->

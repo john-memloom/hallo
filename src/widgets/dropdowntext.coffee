@@ -15,7 +15,7 @@
       label: null
       editable: null
       target: ''
-      targetOffset: { x: -20, y: 0}
+      targetOffset: { x: 0, y: 0}
       cssClass: null
       default: null
       width: null
@@ -34,8 +34,9 @@
           return
         @_showTarget()
 
-      target.on 'click', =>
-        @_hideTarget()
+      target.on 'click', (evt) =>
+        if (evt.target == evt.currentTarget)
+          evt.stopPropagation()
 
       @options.editable.element.on 'hallodeactivated' , =>
         @_hideTarget()
@@ -49,12 +50,19 @@
       @element.append @button
 
     _showTarget: ->
+      # drag = @options.editable.toolbar.closest('.ui-draggable')
+      # $(drag).draggable("disable")
+      # console.log(drag)
       target = jQuery @options.target
       @_updateTargetPosition()
       target.addClass 'open'
       target.show()
+      selected = target.children('.selected')
+      target.scrollTop(selected[0].offsetTop) if (selected.length > 0)
+
     
     _hideTarget: ->
+      # @options.editable.toolbar.closest('.ui-draggable').draggable("enable")
       target = jQuery @options.target
       target.removeClass 'open'
       target.hide()
@@ -79,7 +87,7 @@
           dropglyph =  "<img src='#{dropglyph}' class='ui-drop-down-button'></img>"
         else
           dropglyph =  "<img src='/svg-icons/textedit_dropdown.svg' class='ui-drop-down-button'></img>"
-        textHtml = "<div style='float: left; margin-top: 6px;'>#{@options.default}&nbsp;</div>"
+        textHtml = "<div class='inner-text' style='float: left; margin-top: 6px;'>#{@options.default}&nbsp;</div>"
       else
         classes = [
           'ui-button'
@@ -93,10 +101,8 @@
 
       buttonEl = jQuery "<button id='#{id}'
        class='#{classes.join(' ')}' title='#{@options.label.replace(/_/g, ' ')}'>
-       <div style='width: #{@options.width}px;'>
        #{textHtml}
        #{dropglyph}
-       </div>
        </button>"
       buttonEl.addClass @options.cssClass if @options.cssClass
       buttonEl

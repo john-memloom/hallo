@@ -54,16 +54,18 @@
       el = @widget.options.editable.element
       r = @widget.options.editable.getSelection()
       allOrNothing = (r.toString()=='' || (r.toString().trim() == el.text().trim()))
-      if size=='1' || size==1
-        lh = 'normal' 
-      else
-        lh = (parseFloat(size) * 120) + '%'
+      lh = "" + size + 'em' 
+      lh = 'normal' if size=='1' || size==1
       if (allOrNothing)              
         el.find('*').css('line-height', '')
         el.css('line-height', lh)
       else
-        rangy.createStyleApplier("line-height: #{lh};", {normalize: true}).applyToRange(r)
+        r.selectNode(r.commonAncestorContainer)
+        rangy.createStyleApplier("line-height: #{lh};", {normalize: true, elementTagName: "div"}).applyToRange(r)
       $('#' + @widget.options.uuid + '-line_space input').val(size+"x")
+      sel = rangy.getSelection()
+      sel.removeAllRanges()
+      sel.addRange(r)
       @widget.options.editable.element.trigger('hallomodified')
       
     _prepareDropdown: (contentId) ->
@@ -96,15 +98,22 @@
     _prepareQueryState: ->
       queryState = (event) =>
         r = @widget.options.editable.getSelection()
-        size = getComputedStyle(r.startContainer.parentElement).getPropertyValue('line-height')
+        el = r.startContainer.parentElement || @widget.options.editable.element[0]
+        size = getComputedStyle(el).getPropertyValue('line-height')
         if size=='normal'
           size = 1
         else
           size = parseFloat(size.slice(0, -2))
-          fsize = parseFloat(getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-size').slice(0,-2))
-          size = (size / fsize) / 1.2
+          fsize = parseFloat(getComputedStyle(el).getPropertyValue('font-size').slice(0,-2))
+          size = (size / fsize)
           size = Math.round(size*10)/10
         $('#' + @widget.options.uuid + '-linespace input').val(size + 'x')
+        items = $('.linespace-item')
+        items.removeClass('selected')
+        item = items.filter (idx, el) =>
+          $(el).text().trim() == ('' + size)
+        item.addClass('selected')
+
       events = 'keyup paste change mouseup hallomodified'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>

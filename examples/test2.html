@@ -21,8 +21,8 @@
 
     <div id="text_editor_toolbar" style="height: 100px;"></div>
 
-    <div class="editable" style="width: 600px; height: 200px; background-color: lightyellow; margin: 20px; font-family: 'Arial';">
-          <b>Lorem ipsum</b> dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+    <div class="editable" style="width: 600px; height: 600px; background-color: lightyellow; margin: 20px; font-family: 'Arial';">
+      Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
     </div>
 
 
@@ -80,7 +80,7 @@
 
             linespace: {
               img: 'svg-icons/textedit_linespacing.svg',
-              sizes: [0.5,1,1.5,2,2.5]
+              sizes: [1,1.15,1.5,2]
             },
 
             // listlines: {
@@ -95,20 +95,16 @@
             },
 
             fontlist: {
-              fonts: [
-                {family: 'dummy1', fontName: 'Museo Sans'},
-                {family: 'dummy2', fontName: 'Museo Slab'},
-                {family: 'dummy3', fontName: 'Bree'},
-                {family: 'dummy4', fontName: 'Grafolita'},
-                {family: 'dummy5', fontName: 'Droid Serif'},
-                {family: 'dummy6', fontName: 'Kepler'},
-                {family: 'dummy7', fontName: 'Grandma'},
-              ],
+              fonts: [ 'Times', 'Arial', 'Verdana', 'Courier' ],
               fontCallback: loadTypekitFont 
             },
             
             fontsize: {
-              sizes: [12,14,16,17,24,36,48,72,96,128,144]
+              sizes: [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48]
+            },
+
+            fontautosize: {
+              img: ['svg-icons/textedit_autosize_off.svg', 'svg-icons/textedit_autosize_on.svg']
             },
             
             fontcolor: {},

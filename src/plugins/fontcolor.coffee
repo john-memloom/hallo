@@ -39,6 +39,7 @@
       buttonset.append target
       buttonset.append @_prepareButton target
       @_prepareQueryState()
+      @_updateToolbarDisplay()
 
     _prepareDropdown: (contentId) ->
       contentArea = jQuery "<div id='#{contentId}' class='font-color-picker'></div>"
@@ -53,12 +54,20 @@
             # set color on all child elemnts rather than just the parent so as to make it
             # more persistent...
             el.find('*').css('color', color)
+            el.css('color', color)
             # this is the old way of doing it - clear the color on all children and add it to the parent
             # el.find('*').css('color', '')
             # el.css('color', color)
-          else
+          else 
             rangy.createStyleApplier("color: #{color};", {normalize: true}).applyToRange(r)
+            $(r.startContainer).closest('li').css('color', color)
+            $(r.getNodes()).css('color', color)
           $(evt.target).closest('.fontcolor').find('.font-color-button').css('background-color', color)
+
+          sel = rangy.getSelection()
+          sel.removeAllRanges()
+          sel.addRange(r)
+
           @widget.options.editable.element.trigger('hallomodified')
       for sectionName in ['grays', 'brights', 'shades']
         section = jQuery "<div class='font-color-selection' style='height: #{(@options[sectionName].length/10)*17}px;'></div>"
@@ -69,22 +78,33 @@
 
     _prepareButton: (target) ->
       buttonElement = jQuery '<span></span>'
-      buttonGlyph = '<div class="font-color-button">&nbsp;</div>'
+      buttonGlyph = '<span class="font-color-button">&nbsp;</span>'
       buttonElement.hallodropdownbutton
         uuid: @options.uuid
         editable: @options.editable
         label: 'font_colors'
         html: buttonGlyph
         target: target
-        targetOffset: {x:0, y:0}
+        targetOffset: @options.targetOffset
         cssClass: @options.buttonCssClass
       buttonElement
 
+    _updateToolbarDisplay: ->
+      r = @widget.options.editable.getSelection()
+      el = r.startContainer.parentElement
+      if el 
+        if (@widget.options.editable.element.closest(el).length > 0)
+          el = @widget.options.editable.element[0]
+      else
+        el = @widget.options.editable.element[0]
+      if (r.startOffset == r.endOffset) && (r.startOffset == 0) && (el.firstElementChild != null) && (typeof el.firstElementChild != 'undefined')
+        el = el.firstElementChild 
+      color = getComputedStyle(el).getPropertyValue('color')
+      @widget.options.toolbar.find('.font-color-button').css('background-color', color)
+
     _prepareQueryState: ->
       queryState = (event) =>
-        r = @widget.options.editable.getSelection()
-        color = getComputedStyle(r.startContainer.parentElement).getPropertyValue('color')
-        @widget.options.toolbar.find('.font-color-button').css('background-color', color)
+        @_updateToolbarDisplay()
       events = 'keyup paste change hallomodified mouseup'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>

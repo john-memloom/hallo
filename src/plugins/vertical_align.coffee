@@ -51,7 +51,11 @@
         img: img
         cssClass: @options.buttonCssClass
       btn.on "click", (evt) =>
+        r = @options.editable.getSelection()
         @verticallyAlign(evt, alignment, @options.editable.element)
+        sel = rangy.getSelection()
+        sel.removeAllRanges()
+        sel.addRange(r)
         @options.editable.element.trigger('hallomodified')
       btn        
 

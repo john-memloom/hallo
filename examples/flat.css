@@ -7,7 +7,7 @@ div.hallotoolbar {
     font-size: 12pt;
     line-height: 1.1em;
     z-index: 500;
-    width: 355px;
+    /*width: 400px;*/
 }
 
 .ui-button-flat {
@@ -35,7 +35,6 @@ div.hallotoolbar {
 .ui-drop-down-button {
     margin-left: -10px;
     margin-right: -10px;
-    float: right;
 }
 
 .ui-droplist {
@@ -45,6 +44,8 @@ div.hallotoolbar {
     border-radius: 6px;
     padding: 0;
     color: #D9D4C9;
+    height: 200px;
+    overflow-y: scroll;
 }
 
 .ui-droplist .ui-button-flat {
@@ -52,6 +53,9 @@ div.hallotoolbar {
     padding-right: 5px;
 }
 
+
+.ui-droplist .ui-text-only.selected,
+.ui-droplist .ui-button-flat.ui-state-active,
 .ui-droplist .ui-text-only:hover,
 .ui-droplist .ui-button-flat:hover {
     background-color: #4E7AA5;
@@ -78,7 +82,7 @@ div.hallotoolbar {
     padding: 10px 0 5px 0;
 }
 
-.halloButtonrow:nth-of-type(1) {
+.halloButtonrow-1 {
     border: none;
 }
 

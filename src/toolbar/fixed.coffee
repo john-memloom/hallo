@@ -92,5 +92,6 @@
 
       # catch deactivate -> hide
       @element.on 'hallodeactivated', (event, data) =>
+        console.log('toolbar deactivated')
         @toolbar.hide()
 ) jQuery

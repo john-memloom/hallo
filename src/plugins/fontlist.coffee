@@ -9,6 +9,7 @@
       toolbar: null
       uuid: ''
       buttonCssClass: null
+      default: 'Times'
 
       # fonts[] can contain strings representing font-families, the string '-' will insert
       # a <hr> in the div that lists the available fonts
@@ -60,19 +61,39 @@
       buttonset.append target
       buttonset.append @_prepareButton target
       @_prepareQueryState()
+      @_updateToolbarDisplay()
+
+    _updateToolbarDisplay: ->
+      r = @widget.options.editable.getSelection()
+      el = r.startContainer.parentElement
+      if el 
+        if (@widget.options.editable.element.closest(el).length > 0)
+          el = @widget.options.editable.element[0]
+      else
+        el = @widget.options.editable.element[0]
+      if (r.startOffset == r.endOffset) && (r.startOffset == 0) && (el.firstElementChild != null) && (typeof el.firstElementChild != 'undefined')
+        el = el.firstElementChild 
+      font = getComputedStyle(el).getPropertyValue('font-family')
+      el = $('#' + @widget.options.uuid + '-fonts').find('.inner-text')[0]
+      if (@widget.fontNames)
+        font = font.split(',')[0].trim().toLowerCase()
+        if (font[0] == "'" || font[0] == '"')
+          font = font.slice(1,-1)
+        name = @widget.fontNames[font]
+        name = font unless name
+      else
+        name = font
+      items = $('.font-item')
+      items.removeClass('selected')
+      item = items.filter (idx, el) =>
+        $(el).text().trim().toLowerCase() == name.trim().toLowerCase()
+      item.addClass('selected')
+      $(el).text(name)
+
 
     _prepareQueryState: ->
       queryState = (event) =>
-        r = @widget.options.editable.getSelection()
-        font = getComputedStyle(r.startContainer.parentElement).getPropertyValue('font-family')
-        el = $('#' + @widget.options.uuid + '-fonts').children().children()[0]
-        if (@widget.fontNames)
-          font = font.split(',')[0].trim()
-          name = @widget.fontNames[font]
-          name = font unless name
-        else
-          name = font
-        $(el).text(name)
+        @_updateToolbarDisplay()
       events = 'keyup paste change hallomodified mouseup'
       @options.editable.element.on events, queryState
       @options.editable.element.on 'halloenabled', =>
@@ -91,8 +112,11 @@
           el.css('font-family', font)
         else
           rangy.createStyleApplier("font-family: #{font};", {normalize: true}).applyToRange(r)
-        el = $('#' + @widget.options.uuid + '-fonts').children().children()[0]
+        el = $('#' + @widget.options.uuid + '-fonts').find('.inner-text')[0]
         $(el).text(name)
+        sel = rangy.getSelection()
+        sel.removeAllRanges()
+        sel.addRange(r)
         @widget.options.editable.element.trigger('hallomodified')
 
       addFont = (font) =>
@@ -137,7 +161,7 @@
         uuid: @options.uuid
         editable: @options.editable
         label: 'fonts'
-        default: 'Times'
+        default: @options.default
         target: target
         targetOffset: {x:0, y:0}
         width: 160

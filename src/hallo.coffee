@@ -346,7 +346,7 @@ http://hallojs.org
       @element[originalToolbar] 'destroy'
       do @toolbar.remove
       do @_prepareToolbar
-
+      # console.log('changeToolbar', hide)
       @toolbar.hide() if hide
 
     _checkModified: (event) ->
